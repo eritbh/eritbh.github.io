@@ -25,11 +25,11 @@
 				</a>
 			</span>
 			{% if page.date %}
-				<span>
-					<a><time datetime="{{ page.date }}">{{ page.date | date_to_string }}</a>
-				</span>
+			<span>
+				<a><time datetime="{{ page.date }}">{{ page.date | date_to_string }}</a>
+			</span>
 			{% endif %}
-			</header>
+		</header>
 
 		<main>
 			{{ content }}
