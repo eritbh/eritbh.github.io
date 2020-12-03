@@ -92,7 +92,7 @@ main > :first-child {
 	margin-top: 0;
 }
 
-main h2, main h3, main h4, main h5, main h6, main p, main br, main blockquote, main pre {
+main h2, main h3, main h4, main h5, main h6, main p, main hr, main blockquote, main pre {
 	margin: 1em 0;
 }
 main h1 {
@@ -146,9 +146,15 @@ main blockquote::before {
 	top: 0;
 	bottom: 0;
 	left: 0;
-	width: 2px;
+	width: 0.125rem;
 	background: var(--foreground);
-	opacity: 0.15;
+	opacity: 15%;
+}
+main hr {
+	border: 0;
+	border-top: 0.125rem solid var(--foreground);
+	box-shadow: -7rem 0 var(--foreground);
+	margin: 2rem -1rem;
 }
 
 footer {
