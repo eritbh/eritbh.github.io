@@ -36,7 +36,11 @@ body {
 	color: var(--foreground);
 }
 
-nav {
+a {
+	color: inherit;
+}
+
+header {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
@@ -45,11 +49,11 @@ nav {
 	list-style: none;
 	line-height: 3rem;
 }
-nav > span {
+header > span {
 	margin: 0.5rem 0 0 0.5rem;
 	font-size: 4rem;
 }
-nav > span a {
+header > span a {
 	display: block;
 	padding: 0 0.5rem;
 	color: inherit;
@@ -57,10 +61,10 @@ nav > span a {
 	font-weight: 800;
 	text-decoration: none;
 }
-nav > span:hover {
+header > span:hover {
 	text-decoration: underline;
 }
-nav > span h2 {
+header > span h2 {
 	margin: 0 -0.5rem 0 -1rem;
 	padding: 0 1rem;
 	position: relative;
@@ -69,7 +73,7 @@ nav > span h2 {
 	font-size: 1.75rem;
 	font-weight: 800;
 }
-nav > span h2::before {
+header > span h2::before {
 	content: "";
 	display: block;
 	position: absolute;
@@ -146,12 +150,18 @@ main blockquote::before {
 	background: var(--foreground);
 	opacity: 0.15;
 }
-main a {
-	color: inherit;
-}
 
 footer {
 	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
+}
+
+nav ul {
+	list-style: none;
+	display: flex;
+	padding: 0;
+}
+nav li {
+	margin: 0 calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
 }
 
 .posts-list {
