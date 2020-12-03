@@ -1,6 +1,6 @@
 :root {
 	/* value scales from 0 to 1rem at page sizes 52rem to 64rem */
-	--expanding-rem: clamp(0em, (100vw - 52rem) / 12, 1em);
+	--expanding-rem: clamp(0rem, (100vw - 52rem) / 12, 1rem);
 }
 
 /* theme colors */
