@@ -11,4 +11,4 @@ function toggleTheme (theme = document.documentElement.getAttribute('data-theme'
 }
 
 // add theme toggle button to the page (not in static HTML so it doesn't show up for clients with JS disabled)
-document.write('<button class="theme-button" aria-label="Toggle theme" onclick="toggleTheme()"></button>');
+document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');
