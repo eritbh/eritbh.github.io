@@ -146,6 +146,9 @@ main blockquote::before {
 	background: var(--foreground);
 	opacity: 0.15;
 }
+main a {
+	color: inherit;
+}
 
 footer {
 	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
