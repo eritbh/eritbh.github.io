@@ -1,0 +1,23 @@
+.theme-button {
+	position: fixed;
+	bottom: 1rem;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	width: 3rem;
+	height: 3rem;
+	line-height: 1;
+	text-align: center;
+	background: var(--foreground);
+	border: none;
+	color: var(--background);
+	font-size: 0;
+}
+.theme-button::after {
+	content: "\002600\00FE0E";
+	font-size: 2rem;
+	font-weight: bold;
+}
+[data-theme="dark"] .theme-button::after {
+	content: "\01F319\00FE0E";
+}

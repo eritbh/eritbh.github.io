@@ -1,0 +1,152 @@
+:root {
+	/* value scales from 0 to 1rem at page sizes 52rem to 64rem */
+	--expanding-rem: clamp(0em, (100vw - 52rem) / 12, 1em);
+}
+
+/* theme colors */
+:root {
+	--foreground: #202020;
+	--background: #EFEFEF;
+}
+html[data-theme="dark"] {
+	--foreground: #EFEFEF;
+	--background: #202020;
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--foreground: #EFEFEF;
+		--background: #202020;
+	}
+	html[data-theme="light"] {
+		--foreground: #202020;
+		--background: #EFEFEF;
+	}
+}
+
+html {
+	max-width: 64rem; /* 50 + 2 + 12 */
+	background: var(--background);
+	font-family: "Open Sans", sans-serif;
+}
+
+body {
+	max-width: 50rem;
+	padding: 0 1rem;
+	margin: calc(2 * var(--expanding-rem) + 1rem) auto;
+	color: var(--foreground);
+}
+
+nav {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	margin: -0.5rem 0 0 -1rem;
+	padding: 0;
+	list-style: none;
+	line-height: 3rem;
+}
+nav > span {
+	margin: 0.5rem 0 0 0.5rem;
+	font-size: 4rem;
+}
+nav > span a {
+	display: block;
+	padding: 0 0.5rem;
+	color: inherit;
+	font-size: 1.25rem;
+	font-weight: 800;
+	text-decoration: none;
+}
+nav > span:hover {
+	text-decoration: underline;
+}
+nav > span h2 {
+	margin: 0 -0.5rem 0 -1rem;
+	padding: 0 1rem;
+	position: relative;
+	background: var(--foreground);
+	color: var(--background);
+	font-size: 1.75rem;
+	font-weight: 800;
+}
+nav > span h2::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: calc(-6 * var(--expanding-rem));
+	width: calc(6 * var(--expanding-rem) + 0.5rem);
+	background: var(--foreground);
+}
+
+main {
+	margin: calc(2 * var(--expanding-rem) + 1rem) 0	calc(2 * var(--expanding-rem) + 3rem)
+}
+
+main > :first-child {
+	margin-top: 0;
+}
+
+main h2, main h3, main h4, main h5, main h6, main p, main br, main blockquote, main pre {
+	margin: 1em 0;
+}
+main h1 {
+	font-size: calc(0.5 * var(--expanding-rem) + 2.5rem);
+	font-weight: 800;
+	margin: calc((1em - 2.5rem) * 4 + 1rem) 0;
+}
+main h2 {
+	font-size: 2rem;
+	font-weight: 800;
+}
+main h3 {
+	font-size: 1.5em;
+	font-weight: 800;
+}
+main h4 {
+	font-size: 1.25em;
+	font-weight: bold;
+}
+main h5 {
+	font-size: 1em;
+	font-weight: normal;
+	text-decoration: underline;
+}
+main h6 {
+	font-size: 1em;
+	font-weight: normal;
+	font-style: italic;
+}
+main pre {
+	background: rgb(127 127 127 / 20%);
+	padding: 1em 1rem;
+	font-family: "JetBrains Mono", monospace;
+	font-size: min(1rem, (100vw - 20rem) / 360 * 3 + 0.5rem);
+	overflow: auto;
+	line-height: 1.2;
+}
+main > pre,
+main > div pre {
+	margin-left: -1rem;
+	margin-right: -1rem;
+}
+main blockquote {
+	border-left: 0.125em solid var(--foreground);
+	padding-left: 1em;
+	position: relative;
+}
+main blockquote::before {
+	content: "";
+	display: block;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 2px;
+	background: var(--foreground);
+	opacity: 0.15;
+}
+
+footer {
+	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
+}
