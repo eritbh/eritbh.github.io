@@ -4,134 +4,116 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<style>
-			@import url('https://necolas.github.io/normalize.css/8.0.1/normalize.css');
-			@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono&display=swap');
+			@import url("https://necolas.github.io/normalize.css/8.0.1/normalize.css");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono&display=swap");
+:root {
+  font-family: "Open Sans", sans-serif;
+  background: #EEE;
+}
 
-			:root {
-				font-family: "Open Sans", sans-serif;
-				background: #EEE;
-				// font-size: calc(1em / 16 * 18);
-			}
+html {
+  max-width: calc(50rem + 2rem + 12rem);
+}
 
-			html {
-				max-width: calc(50rem + 2rem + 12rem);
-			}
+body {
+  max-width: 50rem;
+  padding: 0 1rem;
+  margin: clamp(1rem, 2 * var(--expanding-rem) + 1rem, 3rem) auto;
+  --expanding-rem: calc((100vw - 52rem) / 12);
+  color: #222;
+}
 
-			body {
-				max-width: 50rem;
-				padding: 0 1rem;
-				margin: #{"clamp(1rem, 2 * var(--expanding-rem) + 1rem, 3rem)"} auto;
-				--expanding-rem: calc((100vw - 52rem) / 12);
-				color: #222;
-			}
+nav > ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: -0.5rem 0 0 -1rem;
+  padding: 0;
+  list-style: none;
+  line-height: 3rem;
+}
+nav > ul li {
+  margin: 0.5rem 0 0 0.5rem;
+  font-size: 4rem;
+}
+nav > ul a {
+  display: block;
+  padding: 0 0.5rem;
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+nav > ul li:hover {
+  text-decoration: underline;
+}
+nav > ul h2 {
+  margin: 0 -0.5rem 0 -1rem;
+  padding: 0 1rem;
+  position: relative;
+  background: #222;
+  color: #EEE;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+nav > ul h2::before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: clamp(-6rem, -6 * var(--expanding-rem), 0rem);
+  width: clamp(0.5rem, 6 * var(--expanding-rem) + 0.5rem, 6.5rem);
+  background: #222;
+}
 
-			nav > ul {
-				display: flex;
-				flex-wrap: wrap;
-				align-items: center;
-				margin: -0.5rem 0 0 -1rem;
-				padding: 0;
-				list-style: none;
-				line-height: 3rem;
+main h2, main h3, main h4, main h5, main h6, main p, main br, main blockquote, main pre {
+  margin: 1em 0;
+}
+main h1 {
+  font-size: clamp(2.5rem, 0.5 * var(--expanding-rem) + 2.5rem, 3rem);
+  font-weight: 800;
+  margin: calc((1em - 2.5rem) * 4 + 1rem) 0;
+}
+main h2 {
+  font-size: 2rem;
+  font-weight: 800;
+}
+main h3 {
+  font-size: 1.5em;
+  font-weight: 800;
+}
+main h4 {
+  font-size: 1.25em;
+  font-weight: bold;
+}
+main h5 {
+  font-size: 1em;
+  font-weight: normal;
+  text-decoration: underline;
+}
+main h6 {
+  font-size: 1em;
+  font-weight: normal;
+  font-style: italic;
+}
+main pre {
+  background: #DFDFDF;
+  padding: 1em 1rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(0.625rem, (100vw - 20rem) / 360 * 3 + 0.5rem, 1rem);
+  overflow: auto;
+  line-height: 1.2;
+}
+main > pre {
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+main blockquote {
+  border-left: 0.125em solid #222;
+  padding-left: 0.875em;
+}
 
-				li {
-					margin: 0.5rem 0 0 0.5rem;
-					font-size: 4rem;
-				}
-
-				a {
-					display: block;
-					padding: 0 0.5rem;
-					color: inherit;
-					font-size: 1.25rem;
-					font-weight: 800;
-					text-decoration: none;
-				}
-				li:hover {
-					text-decoration: underline;
-				}
-
-				h2 {
-					margin: 0 -0.5rem 0 -1rem;
-					padding: 0 1rem;
-					position: relative;
-					background: #222;
-					color: #EEE;
-					font-size: 1.75rem;
-					font-weight: 800;
-
-					&::before {
-						content: "";
-						display: block;
-						position: absolute;
-						top: 0;
-						bottom: 0;
-						// 0.5 used as "a little more" here to ensure things are rendered without joints
-						left: #{"clamp(-6rem, -6 * var(--expanding-rem), 0rem)"};
-						width: #{"clamp(0.5rem, 6 * var(--expanding-rem) + 0.5rem, 6.5rem)"};
-						background: #222;
-					}
-				}
-			}
-
-			main {
-				h2, h3, h4, h5, h6, p, br, blockquote, pre {
-					margin: 1em 0;
-				}
-
-				h1 {
-					font-size: #{"clamp(2.5rem, 0.5 * var(--expanding-rem) + 2.5rem, 3rem)"};
-					font-weight: 800;
-					margin: calc((1em - 2.5rem) * 4 + 1rem) 0;
-				}
-
-				h2 {
-					font-size: 2rem;
-					font-weight: 800;
-				}
-
-				h3 {
-					font-size: 1.5em;
-					font-weight: 800;
-				}
-
-				h4 {
-					font-size: 1.25em;
-					font-weight: bold;
-				}
-
-				h5 {
-					font-size: 1em;
-					font-weight: normal;
-					text-decoration: underline;
-				}
-
-				h6 {
-					font-size: 1em;
-					font-weight: normal;
-					font-style: italic;
-				}
-
-				pre {
-					background: #DFDFDF;
-					padding: 1em 1rem;
-					font-family: "JetBrains Mono", monospace;
-					// code font scales with screen size so phones have a chance
-					font-size: #{"clamp(0.625rem, (100vw - 20rem) / 360 * 3 + 0.5rem, 1rem)"};
-					overflow: auto;
-					line-height: 1.2;
-				}
-				
-				> pre {
-					margin-left: -1rem;
-					margin-right: -1rem;
-				}
-				
-				blockquote {
-					border-left: 0.125em solid #222;
-					padding-left: 0.875em;
-				}
-			}
 		</style>
 	</head>
 	<body>
