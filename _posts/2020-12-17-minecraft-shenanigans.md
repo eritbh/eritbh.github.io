@@ -1,5 +1,6 @@
 ---
 title: Self-Hosting a Minecraft Server
+modified: 2020-12-18
 ---
 A couple months ago, a friend of mine decided that we should play some modded Minecraft together. This meant we needed a private server to play on, and neither of us really felt like paying for one, so I launched into a quest for the perfect self-hosted Minecraft server solution without knowing anything about how this is actually meant to be handled.
 
@@ -32,9 +33,9 @@ Sockets=minecraft-server.socket
 StandardInput=socket
 StandardOutput=journal
 StandardError=journal
-WorkingDirectory=/home/minecraft/servers/mc-eternal-1-12-2
-ExecStart=/home/minecraft/servers/mc-eternal-1-12-2/start.sh
-ExecStop=/home/minecraft/servers/mc-eternal-1-12-2/stop.sh
+WorkingDirectory=/home/minecraft/minecraft-server
+ExecStart=/home/minecraft/minecraft-server/start.sh
+ExecStop=/home/minecraft/minecraft-server/stop.sh
 Restart=always
 
 [Install]
@@ -44,8 +45,8 @@ WantedBy=multi-user.target
 ```ini
 # minecraft-server.socket
 [Unit]
-Description=Command FIFO for Minecraft server MCEternal 1.12.2
-PartOf=minecraft.mc-eternal-1-12-2.service
+Description=Command FIFO for Minecraft server
+PartOf=minecraftserver.service
 
 [Socket]
 ListenFIFO=/home/minecraft/minecraft-server/run/stdin
@@ -69,7 +70,7 @@ So now, if I want to run a server command while the server's running, I can just
 ```
 erin@homebox $ sudo su - minecraft
 minecraft@homebox $ echo "say hello" >> minecraft-server/run/stdin
-journalctl -u minecraft.mc-eternal-1-12-2.service -f -n 10 | cut -d: -f7
+journalctl -u minecraft-server.service -f -n 10 | cut -d: -f7
  [Server] hello
 ```
 
