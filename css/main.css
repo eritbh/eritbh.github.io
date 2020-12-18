@@ -5,8 +5,11 @@
 
 /* theme colors */
 :root {
-	--foreground: #202020;
-	--background: #EFEFEF;
+	--dark: #202020;
+	--light: #EFEFEF;
+
+	--foreground: var(--dark);
+	--background: var(--light);
 }
 html[data-theme="dark"] {
 	--foreground: #EFEFEF;
@@ -126,13 +129,24 @@ main h6 {
 	font-weight: normal;
 	font-style: italic;
 }
+
+main code {
+	background: rgb(127 127 127 / 20%);
+	padding: 0.125rem 0.25rem;
+	font-family: "Fira Mono", monospace;
+	font-size: 14px;
+}
+
 main pre {
 	background: rgb(127 127 127 / 20%);
 	padding: 1em 1rem;
-	font-family: "JetBrains Mono", monospace;
 	font-size: min(1rem, (100vw - 20rem) / 360 * 3 + 0.5rem);
 	overflow: auto;
 	line-height: 1.2;
+}
+main pre code {
+	background: unset;
+	padding: 0;
 }
 main > pre,
 main > div pre {
