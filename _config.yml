@@ -4,3 +4,8 @@ author: eritbh
 permalink: pretty
 plugins:
 - jekyll-feed
+defaults:
+- scope: 
+    type: posts
+  values: 
+    layout: post
