@@ -17,24 +17,21 @@
 	align-items: center;
 }
 .theme-button::before {
-	content: "";
-	display: block;
 	border-left: 1rem solid var(--dark);
 	border-right: 1rem solid var(--light);
-	width: 0;
 	height: 2rem;
 	border-radius: 1rem;
-	margin: 0;
 }
 .theme-button::after {
-	content: "";
-	display: block;
 	border-left: 0.5rem solid var(--light);
 	border-right: 0.5rem solid var(--dark);
-	width: 0;
 	height: 1rem;
 	border-radius: 0.5rem;
 
 	margin-left: -1.5rem;
 	margin-right: 0.5rem;
+}
+.theme-button::before, .theme-button::after {
+	content: "";
+	display: block;
 }
