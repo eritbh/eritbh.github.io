@@ -150,6 +150,7 @@ main pre {
 main pre code {
 	background: unset;
 	padding: 0;
+	font-size: inherit;
 }
 main > pre,
 main > div pre {
