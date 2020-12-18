@@ -3,26 +3,29 @@
 	--expanding-rem: clamp(0rem, (100vw - 52rem) / 12, 1rem);
 }
 
-/* theme colors */
+/* base colors */
 :root {
 	--dark: #202020;
-	--light: #EFEFEF;
+	--light: #EFE8E4;
+}
 
+/* color assignment depending on current theme */
+html {
 	--foreground: var(--dark);
 	--background: var(--light);
 }
 html[data-theme="dark"] {
-	--foreground: #EFEFEF;
-	--background: #202020;
+	--foreground: var(--light);
+	--background: var(--dark);
 }
 @media (prefers-color-scheme: dark) {
 	:root {
-		--foreground: #EFEFEF;
-		--background: #202020;
+		--foreground: var(--light);
+		--background: var(--dark);
 	}
 	html[data-theme="light"] {
-		--foreground: #202020;
-		--background: #EFEFEF;
+		--foreground: var(--dark);
+		--background: var(--light);
 	}
 }
 
