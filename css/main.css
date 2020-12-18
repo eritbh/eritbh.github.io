@@ -186,6 +186,17 @@ footer {
 	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
 }
 
+nav {
+	display: flex;
+	justify-content: space-between;
+}
+
+@media screen and (max-width: 500px) {
+	nav {
+		flex-direction: column;
+	}
+}
+
 nav ul {
 	list-style: none;
 	display: flex;
@@ -193,6 +204,10 @@ nav ul {
 }
 nav li {
 	margin: 0 calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
+}
+nav li + li::before {
+	content: "·";
+	margin: inherit;
 }
 
 .posts-list {

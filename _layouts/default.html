@@ -56,6 +56,11 @@
 				{% endif %}
 				{% endfor %}
 			</ul>
+			<ul>
+				{% for link in site.footer_links %}
+				<li><a href="{{ link.url }}">{{ link.name }}</a></li>
+				{% endfor %}
+			</ul>
 		</nav>
 	</footer>
 </body>

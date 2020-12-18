@@ -1,6 +1,12 @@
 title: Hi I'm Erin
 description: Things too long or boring for Twitter
 author: eritbh
+footer_links:
+- name: Twitter
+  url: https://twitter.com/eritbh
+- name: Ko-fi
+  url: https://ko-fi.com/eritbh
+
 permalink: pretty
 plugins:
 - jekyll-feed
