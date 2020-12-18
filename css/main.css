@@ -154,11 +154,15 @@ main blockquote::before {
 	background: var(--foreground);
 	opacity: 15%;
 }
-main hr {
+main hr, main::after {
 	border: 0;
 	border-top: 0.125rem solid var(--foreground);
 	box-shadow: -7rem 0 var(--foreground);
 	margin: 2rem -1rem;
+}
+main::after {
+	content: "";
+	display: block;
 }
 
 footer {
