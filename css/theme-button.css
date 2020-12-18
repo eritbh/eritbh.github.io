@@ -1,6 +1,6 @@
 .theme-button {
 	position: fixed;
-	bottom: 1rem;
+	bottom: calc(2 * var(--expanding-rem) + 1rem);
 	right: 0;
 	margin: 0;
 	padding: 0;
