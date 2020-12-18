@@ -1,2 +1,6 @@
 title: Hi I'm Erin
+description: Things too long or boring for Twitter
+author: eritbh
 permalink: pretty
+plugins:
+- jekyll-feed
