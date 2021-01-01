@@ -11,7 +11,9 @@ Armed with the power of shell scripting, I set out to create an integration that
 
 The process of fetching keys needs to be interactive since you need to type your vault password, so getting it to happen when you first log in is a bit tricky. My first thought was to drop some conditional code in my shell profile that would run it when I open a terminal if it hadn't been run yet, but I haven't worked out all the details for something like that yet. For now, since I'm using Ubuntu on my laptop right now, I just created a new startup application that runs `gnome-terminal -e op-add-identities` when I log in. This approach isn't perfect, and won't work for me with my WSL install since there's no "Startup Applications" GUI and no `gnome-terminal`, but it'll be good enough for now. In the future, I'll probably revise the script to work how I originally intended.
 
-Hopefully this will be useful for anyone looking to set up something similar—I couldn't find many resources about this sort of thing when I was looking, just a couple old Reddit threads and 1Password forum posts that didn't seem to include any complete solutions. I'll update this post and the Gist above if I ever get around to making the improvements I mentioned.
+Hopefully this will be useful for anyone looking to set up something similar—I couldn't find many resources about this sort of thing when I was looking, just a couple old Reddit threads and 1Password forum posts that didn't seem to include any complete solutions. I'll update this post and the Gist if I ever get around to making the improvements I mentioned.
+
+<script src="https://gist.github.com/Geo1088/5db73c1ddf9c27c425e7f4bd1f054c1c.js"></script>
 
 [1password-cli]: https://support.1password.com/command-line-getting-started
 [tweet-jq-oneliner]: https://twitter.com/eritbh/status/1344731396879822848?s=20
