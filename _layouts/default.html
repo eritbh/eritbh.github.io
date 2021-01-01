@@ -55,6 +55,7 @@
 				<li><a href="{{ page.url }}">{{ page.navtitle | default: page.title }}</a></li>
 				{% endif %}
 				{% endfor %}
+				<li><a href="/feed.xml">Feed</a></li>
 			</ul>
 			<ul>
 				{% for link in site.footer_links %}
