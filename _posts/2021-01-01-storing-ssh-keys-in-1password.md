@@ -13,8 +13,8 @@ The process of fetching keys needs to be interactive since you need to type your
 
 Hopefully this will be useful for anyone looking to set up something similar—I couldn't find many resources about this sort of thing when I was looking, just a couple old Reddit threads and 1Password forum posts that didn't seem to include any complete solutions. I'll update this post and the Gist if I ever get around to making the improvements I mentioned.
 
-<script src="https://gist.github.com/Geo1088/5db73c1ddf9c27c425e7f4bd1f054c1c.js"></script>
+<script src="https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c.js"></script>
 
 [1password-cli]: https://support.1password.com/command-line-getting-started
 [tweet-jq-oneliner]: https://twitter.com/eritbh/status/1344731396879822848?s=20
-[script-gist]: https://gist.github.com/Geo1088/5db73c1ddf9c27c425e7f4bd1f054c1c
+[script-gist]: https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c
