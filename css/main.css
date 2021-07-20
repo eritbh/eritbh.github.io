@@ -61,6 +61,7 @@ header {
 	list-style: none;
 	line-height: 3rem;
 }
+/* TODO: this list should be refactored when I add tags, its markup is weird */
 header > span {
 	margin: 0.5rem 0 0 0.5rem;
 	font-size: 5rem;
@@ -73,7 +74,7 @@ header > span a {
 	font-weight: 800;
 	text-decoration: none;
 }
-header > span:hover {
+header > span.hover:hover {
 	text-decoration: underline;
 }
 header > span h2 {
