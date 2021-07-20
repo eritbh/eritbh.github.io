@@ -31,6 +31,7 @@ html[data-theme="dark"] {
 
 html {
 	max-width: 64rem; /* 50 + 2 + 12 */
+	background: #EFE8E4; /* fallback for old shit */
 	background: var(--background);
 	font-family: "Open Sans", sans-serif;
 }
@@ -39,6 +40,7 @@ body {
 	max-width: 50rem;
 	padding: 0 1rem;
 	margin: calc(2 * var(--expanding-rem) + 1rem) auto;
+	color: #202020; /* fallback for old shit */
 	color: var(--foreground);
 }
 
