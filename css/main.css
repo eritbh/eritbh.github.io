@@ -39,6 +39,7 @@ html {
 body {
 	max-width: 50rem;
 	padding: 0 1rem;
+	margin: 1rem;
 	margin: calc(2 * var(--expanding-rem) + 1rem) auto;
 	color: #202020; /* fallback for old shit */
 	color: var(--foreground);
@@ -92,12 +93,15 @@ header > span h2::before {
 	position: absolute;
 	top: 0;
 	bottom: 0;
+	left: 0;
 	left: calc(-6 * var(--expanding-rem));
+	width: 0.5rem;
 	width: calc(6 * var(--expanding-rem) + 0.5rem);
 	background: var(--foreground);
 }
 
 main {
+	margin: 1rem 0 3rem;
 	margin: calc(2 * var(--expanding-rem) + 1rem) 0	calc(2 * var(--expanding-rem) + 3rem)
 }
 
@@ -109,8 +113,10 @@ main h2, main h3, main h4, main h5, main h6, main p, main hr, main blockquote, m
 	margin: 1em 0;
 }
 main h1 {
+	font-size: 2.5rem;
 	font-size: calc(0.5 * var(--expanding-rem) + 2.5rem);
 	font-weight: 800;
+	margin: 1rem 0;
 	margin: calc((1em - 2.5rem) * 4 + 1rem) 0;
 }
 main h2 {
@@ -187,6 +193,7 @@ main::after {
 }
 
 footer {
+	margin-bottom: 3rem;
 	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
 }
 
@@ -207,6 +214,7 @@ nav ul {
 	padding: 0;
 }
 nav li {
+	margin: 0 0.5rem 0 0;
 	margin: 0 calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
 }
 nav li + li::before {
@@ -221,6 +229,7 @@ nav li + li::before {
 .posts-list a {
 	color: inherit;
 	text-decoration: inherit;
+	margin: 0 0 1rem;
 	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
 }
 
@@ -229,7 +238,7 @@ nav li + li::before {
 	flex-direction: column;
 }
 .posts-list h2 {
-	margin: 0 calc(var(--expanding-rem) + 0.5rem) 0 0;
+	margin: 0;
 }
 .posts-list a:hover h2 {
 	text-decoration: underline;
@@ -240,6 +249,6 @@ nav li + li::before {
 	margin-bottom: 0.25rem;
 }
 .posts-list p {
+	margin: 0.5rem 0 0;
 	margin: calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
-	flex-basis: 100%;
 }
