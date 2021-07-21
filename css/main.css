@@ -210,25 +210,25 @@ main::after {
  * H2s are the highest-level heading used repeatedly throughout articles, so
  * they get used as section breaks and have dividers attached
  */
-main h2 {
+main > h2 {
 	position: relative;
 	width: max-content;
 	border-bottom: 0.125rem solid var(--foreground);
 	padding-bottom: calc(0.25 * var(--expanding-rem) + 0.25rem);
 }
-main h2::before,
-main h2::after {
+main > h2::before,
+main > h2::after {
 	content: "";
 	display: block;
 	position: absolute;
 	bottom: -0.125rem;
 	border-bottom: 0.125rem solid var(--foreground);
 }
-main h2::before {
+main > h2::before {
 	left: -7rem;
 	width: 7rem;
 }
-main h2::after {
+main > h2::after {
 	right: -1rem;
 	width: 1rem;
 }
