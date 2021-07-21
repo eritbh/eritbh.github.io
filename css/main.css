@@ -29,6 +29,8 @@ html[data-theme="dark"] {
 	}
 }
 
+/* Base styles */
+
 html {
 	max-width: 64rem; /* 50 + 2 + 12 */
 	background: #EFE8E4; /* fallback for old shit */
@@ -52,6 +54,8 @@ a {
 p {
 	line-height: 1.5;
 }
+
+/* Page header */
 
 header {
 	display: flex;
@@ -100,6 +104,8 @@ header > span h2::before {
 	background: var(--foreground);
 }
 
+/* Main page markdown content */
+
 main {
 	margin: 1rem 0 3rem;
 	margin: calc(2 * var(--expanding-rem) + 1rem) 0	calc(2 * var(--expanding-rem) + 3rem)
@@ -109,7 +115,15 @@ main > :first-child {
 	margin-top: 0;
 }
 
-main h2, main h3, main h4, main h5, main h6, main p, main hr, main blockquote, main pre {
+main h2,
+main h3,
+main h4,
+main h5,
+main h6,
+main p,
+main hr,
+main blockquote,
+main pre {
 	margin: 1em 0;
 }
 main h1 {
@@ -219,6 +233,8 @@ main h2::after {
 	width: 1rem;
 }
 
+/* Footer content */
+
 footer {
 	margin-bottom: 3rem;
 	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
@@ -252,6 +268,8 @@ nav ul a {
 	margin: -0.75rem -0.5rem;
 	padding: 0.75rem 0.5rem;
 }
+
+/* Post list */
 
 .posts-list {
 	display: flex;
