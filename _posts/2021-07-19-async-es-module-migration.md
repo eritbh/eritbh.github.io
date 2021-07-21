@@ -1,6 +1,5 @@
 ---
 title: Moving Old Asynchronous Systems to ES6 Modules
-tags: javascript
 ---
 I think ES modules are an awesome addition to Javascript. They allow static analysis across files, allowing for things like tree shaking and making VS Code's Intellisense feature even more useful for large projects. However, I've been working to bring these advantages to an older codebase, and it presented some challenges that I haven't had in other projects; I thought I'd document my findings here.
 
