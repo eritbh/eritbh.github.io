@@ -246,6 +246,12 @@ nav li + li::before {
 	content: "·";
 	margin: inherit;
 }
+nav ul a {
+	/* Give footer links bigger hitboxes */
+	display: inline-block;
+	margin: -0.75rem -0.5rem;
+	padding: 0.75rem 0.5rem;
+}
 
 .posts-list {
 	display: flex;
