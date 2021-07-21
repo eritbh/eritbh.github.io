@@ -226,18 +226,16 @@ footer {
 
 nav {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-between;
-}
-
-@media screen and (max-width: 500px) {
-	nav {
-		flex-direction: column;
-	}
+	margin: 0 -1rem;
 }
 
 nav ul {
 	list-style: none;
 	display: flex;
+	margin-left: 1rem;
+	margin-right: 1rem;
 	padding: 0;
 }
 nav li {
