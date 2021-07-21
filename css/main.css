@@ -222,7 +222,7 @@ main::after {
  */
 main > h2 {
 	position: relative;
-	width: max-content;
+	display: inline-block;
 	border-bottom: 0.125rem solid var(--foreground);
 	padding-bottom: calc(0.25 * var(--expanding-rem) + 0.25rem);
 }
