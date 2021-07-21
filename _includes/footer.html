@@ -1,0 +1,23 @@
+<footer>
+	{% if page.modified %}
+	<p>
+		<i>Last modified <time datetime="page.modified">{{ page.modified | date_to_string }}</time>.</i>
+	</p>
+	{% endif %}
+	<nav>
+		<ul>
+			{% assign sorted_pages = site.pages | sort: "order" %}
+			{% for page in sorted_pages %}
+			{% if page.order %}
+			<li><a href="{{ page.url }}">{{ page.navtitle | default: page.title }}</a></li>
+			{% endif %}
+			{% endfor %}
+			<li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul>
+			{% for link in site.footer_links %}
+			<li><a href="{{ link.url }}">{{ link.name }}</a></li>
+			{% endfor %}
+		</ul>
+	</nav>
+</footer>

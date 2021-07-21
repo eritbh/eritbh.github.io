@@ -66,6 +66,9 @@ header {
 	list-style: none;
 	line-height: 3rem;
 }
+header.big {
+	line-height: 5rem;
+}
 /* TODO: this list should be refactored when I add tags, its markup is weird */
 header > span {
 	margin: 0.5rem 0 0 0.5rem;
@@ -82,6 +85,7 @@ header > span a {
 header > span.hover:hover {
 	text-decoration: underline;
 }
+header.big h1,
 header > span h2 {
 	margin: 0 -0.5rem 0 -1rem;
 	padding: 0 1rem;
@@ -91,6 +95,7 @@ header > span h2 {
 	font-size: 1.75rem;
 	font-weight: 800;
 }
+header.big h1::before,
 header > span h2::before {
 	content: "";
 	display: block;
@@ -102,6 +107,11 @@ header > span h2::before {
 	width: 0.5rem;
 	width: calc(6 * var(--expanding-rem) + 0.5rem);
 	background: var(--foreground);
+}
+header.big h1 {
+	font-size: 3rem;
+	margin: 0;
+	padding: 0 2rem 0 1rem;
 }
 
 /* Main page markdown content */

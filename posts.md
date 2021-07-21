@@ -1,8 +1,6 @@
 ---
-layout: default
 title: All Posts
+navtitle: Posts
 order: 2
 ---
-# All Posts
-
 {% include post_list.html num=0 %}
