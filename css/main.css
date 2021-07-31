@@ -285,16 +285,15 @@ nav ul a {
 	display: flex;
 	flex-direction: column;
 }
-.posts-list a {
-	color: inherit;
-	text-decoration: inherit;
-	margin: 0 0 1rem;
-	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
-}
-
 .posts-list article {
 	display: flex;
 	flex-direction: column;
+	margin: 0 0 1rem;
+	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
+}
+.posts-list a {
+	color: inherit;
+	text-decoration: inherit;
 }
 .posts-list h2 {
 	margin: 0;
