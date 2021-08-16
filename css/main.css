@@ -57,61 +57,58 @@ p {
 
 /* Page header */
 
-header {
+.site-header {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: center;
-	margin: -0.5rem 0 0 -1rem;
-	padding: 0;
-	list-style: none;
+}
+
+.site-header__title {
+	margin: 0 1rem 0 0; /* fallback for old shit */
+	margin: 0 1rem 0 calc(-6 * var(--expanding-rem) - 1rem);
+	padding: 0 1rem 0 calc(6 * var(--expanding-rem) + 1rem);
 	line-height: 3rem;
-}
-header.big {
-	line-height: 5rem;
-}
-/* TODO: this list should be refactored when I add tags, its markup is weird */
-header > span {
-	margin: 0.5rem 0 0 0.5rem;
-	font-size: 5rem;
-}
-header > span a {
-	display: block;
-	padding: 0 0.5rem;
-	color: inherit;
-	font-size: 1.25rem;
-	font-weight: 800;
-	text-decoration: none;
-}
-header > span.hover:hover {
-	text-decoration: underline;
-}
-header.big h1,
-header > span h2 {
-	margin: 0 -0.5rem 0 -1rem;
-	padding: 0 1rem;
-	position: relative;
 	background: var(--foreground);
 	color: var(--background);
 	font-size: 1.75rem;
 	font-weight: 800;
 }
-header.big h1::before,
-header > span h2::before {
-	content: "";
-	display: block;
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	left: 0;
-	left: calc(-6 * var(--expanding-rem));
-	width: 0.5rem;
-	width: calc(6 * var(--expanding-rem) + 0.5rem);
-	background: var(--foreground);
-}
-header.big h1 {
+
+/* on the homepage we want it beeg since there's no other title */
+.site-header--big .site-header__title {
 	font-size: 3rem;
-	margin: 0;
-	padding: 0 2rem 0 1rem;
+	line-height: 5rem;
+}
+
+/*
+ * When the site title has a link, we make the font size of the heading itself
+ * much larger, then set the font size back down to normal in the link. Then, we
+ * use :hover on the heading to add the underline, making it more pronounced.
+ */
+.site-header--has-link .site-header__title {
+	font-size: 4rem;
+	padding: 0;
+}
+.site-header--has-link .site-header__title:hover {
+	text-decoration: underline;
+}
+.site-header--has-link a {
+	display: block;
+	padding: 0 1rem 0 calc(6 * var(--expanding-rem) + 1rem);
+	text-decoration: none;
+	font-size: 1.75rem;
+}
+
+/* these two never actually get used together, but maybe they will later */
+.site-header--big.site-header--has-link a {
+	font-size: 3rem;
+}
+
+/* header time - should move this somewhere else in the future */
+.site-header time {
+	font-weight: 800;
+	line-height: 3rem;
+	font-size: 1.25rem;
+	margin-right: 1rem;
 }
 
 /* Main page markdown content */
@@ -285,28 +282,30 @@ nav ul a {
 	display: flex;
 	flex-direction: column;
 }
-.posts-list article {
+
+
+.post-meta {
 	display: flex;
 	flex-direction: column;
 	margin: 0 0 1rem;
 	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
 }
-.posts-list a {
+.post-meta a {
 	color: inherit;
 	text-decoration: inherit;
 }
-.posts-list h2 {
-	margin: 0;
-}
-.posts-list a:hover h2 {
+.posts-list a:hover {
 	text-decoration: underline;
 }
-.posts-list time {
+.post-meta__title {
+	margin: 0;
+}
+.post-meta__date {
 	font-size: 1.5em;
 	order: -1;
 	margin-bottom: 0.25rem;
 }
-.posts-list p {
+.post-meta__excerpt {
 	margin: 0.5rem 0 0;
 	margin: calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
 }

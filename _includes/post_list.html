@@ -4,16 +4,16 @@
 		{% assign sorted_posts = sorted_posts | slice: 0, include.num %}
 	{% endif %}
 	{% for post in sorted_posts %}
-	<article>
-		<h2>
+	<article class="post-meta">
+		<h2 class="post-meta__title">
 			<a href="{{ post.url }}">
 				{{ post.title }}
 			</a>
 		</h2>
-		<time datetime="{{ post.date }}">
+		<time class="post-meta__date" datetime="{{ post.date }}">
 			{{ post.date | date_to_string }}
 		</time>
-		<p>
+		<p class="post-meta__excerpt">
 			{{ post.excerpt | strip_html | truncatewords: 30 }}
 		</p>
 	</article>

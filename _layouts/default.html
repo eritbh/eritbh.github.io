@@ -4,7 +4,13 @@ layout: bare
 {% include header.html %}
 
 <main>
-	<h1>{{ page.title }}</h1>
+	<header class="post-meta">
+		<h1 class="post-meta__title">{{ page.title }}</h1>
+
+		{% if page.date %}
+		<time class="post-meta__date" datetime="{{ page.date }}">{{ page.date | date_to_string }}</time>
+		{% endif %}
+	</header>
 
 	{{ content }}
 </main>
