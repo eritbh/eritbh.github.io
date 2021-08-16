@@ -283,6 +283,7 @@ nav ul a {
 	flex-direction: column;
 }
 
+/* Post information display - for posts list and for article headers */
 
 .post-meta {
 	display: flex;
@@ -290,15 +291,15 @@ nav ul a {
 	margin: 0 0 1rem;
 	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
 }
-.post-meta a {
-	color: inherit;
-	text-decoration: inherit;
-}
-.posts-list a:hover {
-	text-decoration: underline;
-}
 .post-meta__title {
+	/* font styles rely on heading styles defined above in <main> */
 	margin: 0;
+}
+.post-meta__title a {
+	text-decoration: none;
+}
+.post-meta__title a:hover {
+	text-decoration: underline;
 }
 .post-meta__date {
 	font-size: 1.5em;

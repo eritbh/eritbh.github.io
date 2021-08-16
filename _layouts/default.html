@@ -8,7 +8,12 @@ layout: bare
 		<h1 class="post-meta__title">{{ page.title }}</h1>
 
 		{% if page.date %}
-		<time class="post-meta__date" datetime="{{ page.date }}">{{ page.date | date_to_string }}</time>
+		<span class="post-meta__date">
+			<time datetime="{{ page.date }}">{{ page.date | date_to_string }}</time>
+			{% if page.modified %}
+			<small>(updated <time datetime="{{ page.modified }}">{{ page.modified | date_to_string }}</time>)</small>
+			{% endif %}
+		</span>
 		{% endif %}
 	</header>
 
