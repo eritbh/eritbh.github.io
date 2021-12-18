@@ -314,6 +314,9 @@ nav ul a {
 	margin: 0 0 1rem;
 	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
 }
+.post-meta:last-child {
+	margin-bottom: 0;
+}
 .post-meta__title {
 	/* font styles rely on heading styles defined above in <main> */
 	margin: 0;

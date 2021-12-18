@@ -1,4 +1,4 @@
-<div class="posts-list">
+<div class="content-block posts-list">
 	{% assign sorted_posts = site.posts | sort: "date" | reverse %}
 	{% if include.num > 0 %}
 		{% assign sorted_posts = sorted_posts | slice: 0, include.num %}
