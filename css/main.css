@@ -55,6 +55,11 @@ p {
 	line-height: 1.5;
 }
 
+img {
+	display: block;
+	max-width: 100%;
+}
+
 /* Page header */
 
 .site-header {
@@ -130,7 +135,8 @@ main h6,
 main p,
 main hr,
 main blockquote,
-main pre {
+main pre,
+main .content-block {
 	margin: 1em 0;
 }
 main h1 {
@@ -309,4 +315,36 @@ nav ul a {
 .post-meta__excerpt {
 	margin: 0.5rem 0 0;
 	margin: calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
+}
+
+/* Text buttons */
+
+.button {
+	display: inline-block;
+	padding: calc(0.25rem + 0.5 * var(--expanding-rem)) calc(0.5rem + var(--expanding-rem));
+	background: var(--foreground);
+	color: var(--background);
+	font-weight: 800;
+	text-decoration: none;
+	font-size: 1.125em;
+}
+
+/* Paragraphs that just contain images */
+
+.images {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -0.5rem;
+}
+
+.images > * {
+	display: block;
+	flex: 0 0 calc(33% - 1rem);
+	margin: 0.5rem;
+}
+
+@media screen and (max-width: 800px) {
+	.images > * {
+		flex-basis: calc(50% - 1rem);
+	}
 }
