@@ -4,9 +4,12 @@ title: User Styles
 
 Here's a stash of my user styles. Use [Stylus][stylus] (for [Firefox][stylus-firefox] or [Chrome/Edge/etc][stylus-chrome]) or another user style manager that supports `@preprocessor stylus`.
 
+The scripts themselves are hosted [on GitHub][repo]. If you use these too and run into issues or think they could benefit from improvements, raise an issue or send a PR - I'd be happy to take a look.
+
 [stylus]: https://add0n.com/stylus.html
 [stylus-firefox]: https://addons.mozilla.org/en-GB/firefox/addon/styl-us/
 [stylus-chrome]: https://chrome.google.com/webstore/detail/stylus/clngdbkpkpeebahjckkjfobafhncgmne
+[repo]: https://github.com/eritbh/userstyles
 
 ## Un-fuck Fandom
 
