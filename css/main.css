@@ -1,3 +1,5 @@
+@charset "utf-8";
+
 :root {
 	/* value scales from 0 to 1rem at page sizes 52rem to 64rem */
 	--expanding-rem: clamp(0rem, (100vw - 52rem) / 12, 1rem);
@@ -280,6 +282,21 @@ nav ul a {
 	display: inline-block;
 	margin: -0.75rem -0.5rem;
 	padding: 0.75rem 0.5rem;
+}
+
+/* Heading anchors */
+
+.heading-link {
+	position: absolute;
+}
+:not(:hover) > .heading-link {
+	opacity: 0;
+}
+.heading-link::after {
+	position: absolute;
+	right: 0;
+	padding: 0 1rem;
+	content: "§";
 }
 
 /* Post list */
