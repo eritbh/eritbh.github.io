@@ -15,7 +15,7 @@ The scripts themselves are hosted [on GitHub][repo]. If you use these too and ru
 
 Gets rid of stupid crap from Fandom wikis, like the useless network navigation bar on the left and the ad bar in the bottom right. Has options for hiding lots of different things.
 
-<a class="button" href="https://github.com/eritbh/userstyles/raw/main/un-fuck-fandom.user.css">Install</a>
+<a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/un-fuck-fandom.user.css">Install</a>
 
 <div class="content-block">
 	<div class="images">
@@ -24,3 +24,30 @@ Gets rid of stupid crap from Fandom wikis, like the useless network navigation b
 		<a href="https://i.eritbh.me/Hq2ChidPepN18.png"><img src="https://i.eritbh.me/Hq2ChidPepN18.png"></a>
 	</div>
 </div>
+
+<script>
+	document.addEventListener('readystatechange', function () {
+		if (document.readyState != 'complete') {
+			return;
+		}
+
+		const versionRegex = /==UserStyle==[\s\S]*@version\s+([^\n]+)[\s\S]*==\/UserStyle==/;
+		for (const button of document.querySelectorAll('.userstyle-install')) {
+			fetch(button.href)
+				.then(response => response.text())
+				.then(body => {
+					let match = body.match(versionRegex);
+					if (!match) {
+						return;
+					}
+
+					let smallEl = document.createElement('small');
+					smallEl.textContent = `v${match[1]}`;
+					button.append(' ', smallEl);
+				})
+				.catch(error => {
+					console.error(error);
+				});
+		}
+	})
+</script>
