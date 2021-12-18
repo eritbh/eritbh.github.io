@@ -10,3 +10,5 @@ I'm a self-taught developer whose main goal at the moment is to stick her hands 
 ## Recent Posts
 
 {% include post_list.html num=3 %}
+
+<a class="button" href="/posts">All Posts</a>
