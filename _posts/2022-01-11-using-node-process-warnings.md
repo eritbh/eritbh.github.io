@@ -1,5 +1,5 @@
 ---
-title: Using Node.js Process Warning
+title: Using Node.js Process Warnings
 ---
 [Process warnings][process-warn] in Node are a very useful tool. They provide a standard interface for exposing warning information to developers, allowing library maintainers to communicate deprecations and possible issues to consumers while providing controls for application developers to deal with them. However, the documentation for them is surprisingly loose, and there are few documented best practictes for their use in libraries as far as I've seen. This article will be an introduction to process warnings and a set of guidelines for both package maintainers and application developers to follow when using process warnings.
 
