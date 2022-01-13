@@ -36,7 +36,7 @@ Node accepts several command-line flags that can change the display of process w
   - Use `--no-deprecation` to skip printing deprecation warnings to stdout.
   - Use `--throw-deprecation` to treat deprecation warnings as thrown exceptions originating from the relevant `process.emitWarning` call.
 
-The `--*-deprecation` flags apply only to deprecation warnings - warnings with their `type` set to exactly `DeprecationWarning`. This is one of several warning types used by Node itself; however, it is the only warning type with its own specific command-line flags.
+The `--*-deprecation` flags apply only to deprecation warnings—warnings with their `type` set to exactly `DeprecationWarning`. This is one of several warning types used by Node itself; however, it is the only warning type with its own specific command-line flags.
 
 Note that the `--no-warnings` and `--no-deprecation` flags prevent warnings from being logged to the console, but do not prevent warnings from being emitted to the `warning` event. This is useful if you want to log warnings in a custom format or to an external service rather than sending them to the console.
 
