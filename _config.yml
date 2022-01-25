@@ -13,11 +13,10 @@ footer_links:
   url: https://ko-fi.com/eritbh
 
 text_direction: ltr
-
 permalink: pretty
-
 plugins:
 - jekyll-feed
+- jekyll-github-metadata
 
 defaults:
 - scope:
