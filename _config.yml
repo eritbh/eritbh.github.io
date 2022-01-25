@@ -1,6 +1,7 @@
 title: Hi I'm Erin
 description: Things too long or boring for Twitter
 author: eritbh
+
 footer_links:
 - name: Mail
   url: mailto:hello@eritbh.me
@@ -14,8 +15,10 @@ footer_links:
 text_direction: ltr
 
 permalink: pretty
+
 plugins:
 - jekyll-feed
+
 defaults:
 - scope:
     type: posts
