@@ -1,7 +1,8 @@
 <footer>
-	{% if page.modified %}
+	{% assign modified_date = page.modified | default: page.date %}
+	{% if modified_date %}
 	<p>
-		<i>Last modified <time datetime="page.modified">{{ page.modified | date_to_string }}</time>.</i>
+		<i>Last modified <time datetime="{{ modified_date }}">{{ modified_date | date_to_string }}</time></i>
 	</p>
 	{% endif %}
 	<nav>
