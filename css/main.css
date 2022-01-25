@@ -71,9 +71,12 @@ img {
 }
 
 .site-header__title {
-	margin: 0 1rem 0 0; /* fallback for old shit */
-	margin: 0 1rem 0 calc(-6 * var(--expanding-rem) - 1rem);
-	padding: 0 1rem 0 calc(6 * var(--expanding-rem) + 1rem);
+	margin: 0;
+	margin-inline-start: calc(-6 * var(--expanding-rem) - 1rem);
+	margin-inline-end: 1rem;
+	padding: 0;
+	padding-inline-start: calc(6 * var(--expanding-rem) + 1rem);
+	padding-inline-end: 1rem;
 	line-height: 3rem;
 	background: var(--foreground);
 	color: var(--background);
@@ -101,7 +104,9 @@ img {
 }
 .site-header--has-link a {
 	display: block;
-	padding: 0 1rem 0 calc(6 * var(--expanding-rem) + 1rem);
+	padding: 0;
+	padding-inline-start: calc(6 * var(--expanding-rem) + 1rem);
+	padding-inline-end: 1rem;
 	text-decoration: none;
 	font-size: 1.75rem;
 }
@@ -109,14 +114,6 @@ img {
 /* these two never actually get used together, but maybe they will later */
 .site-header--big.site-header--has-link a {
 	font-size: 3rem;
-}
-
-/* header time - should move this somewhere else in the future */
-.site-header time {
-	font-weight: 800;
-	line-height: 3rem;
-	font-size: 1.25rem;
-	margin-right: 1rem;
 }
 
 /* Main page markdown content */
@@ -193,11 +190,12 @@ main pre code {
 }
 main > pre,
 main > div pre {
-	margin-left: -1rem;
-	margin-right: -1rem;
+	margin-inline-start: -1rem;
+	margin-inline-end: -1rem;
 }
 main blockquote {
-	padding: 1em 0 1em 1.5em;
+	padding: 1em 0;
+	padding-inline-start: 1.5em;
 	position: relative;
 }
 main blockquote > :first-child {
@@ -217,11 +215,19 @@ main blockquote::before {
 	background: var(--foreground);
 	opacity: 15%;
 }
+[dir=rtl] main blockquote::before {
+	left: initial;
+	right: 0;
+}
 main hr, main::after {
 	border: 0;
 	border-top: 0.125rem solid var(--foreground);
 	box-shadow: -7rem 0 var(--foreground);
 	margin: 2rem -1rem;
+}
+[dir=rtl] main hr,
+[dir=rtl] main::after {
+	box-shadow: 7rem 0 var(--foreground);
 }
 main::after {
 	content: "";
@@ -238,21 +244,18 @@ main > h2 {
 	border-bottom: 0.125rem solid var(--foreground);
 	padding-bottom: calc(0.25 * var(--expanding-rem) + 0.25rem);
 }
-main > h2::before,
 main > h2::after {
 	content: "";
 	display: block;
 	position: absolute;
 	bottom: -0.125rem;
+	right: -1rem;
+	width: 100vw;
 	border-bottom: 0.125rem solid var(--foreground);
 }
-main > h2::before {
-	left: -7rem;
-	width: 7rem;
-}
-main > h2::after {
-	right: -1rem;
-	width: 1rem;
+[dir=rtl] main > h2::after {
+	right: initial;
+	left: -1rem;
 }
 
 /* Footer content */
@@ -272,13 +275,14 @@ nav {
 nav ul {
 	list-style: none;
 	display: flex;
-	margin-left: 1rem;
-	margin-right: 1rem;
+	margin-inline-start: 1rem;
+	margin-inline-end: 1rem;
 	padding: 0;
 }
 nav li {
-	margin: 0 0.5rem 0 0;
-	margin: 0 calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
+	margin: 0;
+	margin-inline-end: 0.5rem;
+	margin-inline-end: calc(0.5 * var(--expanding-rem) + 0.5rem);
 }
 nav li + li::before {
 	content: "·";
@@ -304,6 +308,10 @@ nav ul a {
 	right: 0;
 	padding: 0 1rem;
 	content: "§";
+}
+[dir=rtl] .heading-link::after {
+	right: initial;
+	left: 0;
 }
 
 /* Post list */
@@ -348,7 +356,7 @@ nav ul a {
 
 .button {
 	display: inline-block;
-	padding: 0.25rem calc(0.5rem);
+	padding: 0.25rem 0.5rem;
 	padding: calc(0.5 * var(--expanding-rem) + 0.25rem) calc(var(--expanding-rem) + 0.5rem);
 	background: var(--foreground);
 	color: var(--background);
