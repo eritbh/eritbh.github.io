@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="{{ site.text_direction | default: "auto" }}">
 
 <head>
 
 {% include head_content.html %}
 </head>
 
-<body dir="{{ site.text_direction | default: "auto" }}">
+<body>
 	{{ content }}
 
 	<script>
