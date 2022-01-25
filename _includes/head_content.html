@@ -20,9 +20,19 @@
 <meta property="og:title" content="{% if page.title %}{{page.title}} &bull; {% endif %}{{site.title}}">
 <meta property="og:description" content="{{ page.excerpt | strip_html | truncatewords: 30 | default: site.description }}">
 <meta property="og:image" content="/assets/umbreon-2x.gif">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run">
 <meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}">
+{% if page.id %}
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="{{ page.date }}">
+<meta property="article:modified_time" content="{{ page.modified | default: page.date }}">
+<meta property="article:author" content="{{ site.author }}">
+{% else %}
+<meta property="og:type" content="website">
+{% endif %}
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+<meta property="twitter:card" content="summary">
 
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-JL444KESWX"></script>
