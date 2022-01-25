@@ -1,5 +1,7 @@
 ---
 title: User Styles
+excerpt: Some of my personal CSS snippets that might also be useful for others
+modified: 2022-01-25
 ---
 
 Here's a stash of my user styles. Use [Stylus][stylus] (for [Firefox][stylus-firefox] or [Chrome/Edge/etc][stylus-chrome]) or another user style manager that supports `@preprocessor stylus`.
