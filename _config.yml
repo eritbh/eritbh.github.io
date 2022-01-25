@@ -11,13 +11,15 @@ footer_links:
 - name: Donate
   url: https://ko-fi.com/eritbh
 
+text_direction: ltr
+
 permalink: pretty
 plugins:
 - jekyll-feed
 defaults:
-- scope: 
+- scope:
     type: posts
-  values: 
+  values:
     layout: default
 - scope:
     type: pages

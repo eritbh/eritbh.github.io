@@ -6,7 +6,7 @@
 {% include head_content.html %}
 </head>
 
-<body>
+<body dir="{{ site.text_direction | default: "auto" }}">
 	{{ content }}
 
 	<script>
