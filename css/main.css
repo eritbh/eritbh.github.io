@@ -172,7 +172,7 @@ main h6 {
 main code {
 	background: rgb(127 127 127 / 20%);
 	padding: 0.125rem 0.25rem;
-	font-family: "Fira Mono", monospace;
+	font-family: "JetBrains Mono", monospace;
 	font-size: 14px;
 }
 
