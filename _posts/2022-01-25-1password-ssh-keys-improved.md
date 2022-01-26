@@ -1,5 +1,5 @@
 ---
-title: 1Password and SSH Keys, Part 2
+title: 1Password and SSH Keys, Improved
 excerpt: Releasing v1.0 of my key management suite, informed and improved by lessons learned from the original proof of concept.
 ---
 
