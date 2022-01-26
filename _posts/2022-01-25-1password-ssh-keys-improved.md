@@ -1,6 +1,6 @@
 ---
 title: 1Password and SSH Keys, Part 2
-excerpt: Releasing the second version of my key management suite, informed and improved by lessons learned from the original proof of concept.
+excerpt: Releasing v1.0 of my key management suite, informed and improved by lessons learned from the original proof of concept.
 ---
 
 Last time I [worked on a solution to my SSH key problem][previous post], I wrote scripts to store all my SSH keys in my 1Password vault and load those keys into my SSH agent whenever I need them. To recap, I wrote two scripts: `op-create-identity`, which generated a new keypair and wrote it to a 1Password vault item, and `op-add-identities`, which searched for identity items in your vault and added all their keys to the `ssh-agent` automatically. However, I've recently run into a problem with this approach: if you have too many keys in your agent, logging into a server will try all those keys sequentially until it finds the one for that particular server. I've recently needed to add additional keys for new hosts I need to remote into, which means I'm loading enough keys into my agent that some servers will start disconnecting me for too many login attempts before the correct key is checked.
