@@ -9,12 +9,14 @@
 <body>
 	{{ content }}
 
-	<script>
-		// add theme toggle button to the page (not in static HTML so it doesn't show up for clients with JS disabled)
-		document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');
-	</script>
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
 
+	<!-- Add links to heading anchors for easy sharing -->
 	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
 </body>
 
 </html>
