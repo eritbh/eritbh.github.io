@@ -27,3 +27,6 @@ defaults:
     type: pages
   values:
     layout: default
+
+include:
+- .well-known
