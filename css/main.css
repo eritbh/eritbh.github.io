@@ -248,7 +248,7 @@ main > h2::after {
 	content: "";
 	display: block;
 	position: absolute;
-	bottom: -0.125rem;
+	top: 100%;
 	right: -1rem;
 	width: 100vw;
 	border-bottom: 0.125rem solid var(--foreground);
