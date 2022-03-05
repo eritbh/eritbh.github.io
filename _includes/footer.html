@@ -2,7 +2,7 @@
 	{% assign modified_date = page.modified | default: page.date %}
 	{% if modified_date %}
 	<p>
-		<i>Last modified <time datetime="{{ modified_date }}">{{ modified_date | date: "%-d %B %Y" }}</time></i>
+		<i>Last modified <time datetime="{{ modified_date }}">{{ modified_date | date: site.date_format }}</time></i>
 	</p>
 	{% endif %}
 	<nav>
