@@ -9,9 +9,9 @@ layout: bare
 
 		{% if page.date %}
 		<span class="post-meta__date">
-			<time datetime="{{ page.date }}">{{ page.date | date_to_string }}</time>
+			<time datetime="{{ page.date }}">{{ page.date | date: "%-d %B %Y" }}</time>
 			{% if page.modified %}
-			<small>(updated <time datetime="{{ page.modified }}">{{ page.modified | date_to_string }}</time>)</small>
+			<small>(updated <time datetime="{{ page.modified }}">{{ page.modified | date: "%-d %B %Y" }}</time>)</small>
 			{% endif %}
 		</span>
 		{% endif %}
