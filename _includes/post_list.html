@@ -12,10 +12,10 @@
 		</h2>
 		<span class="post-meta__date">
 			<time datetime="{{ page.date }}">
-				{{ post.date | date: "%-d %B %Y" }}
+				{{ post.date | date: site.date_format }}
 			</time>
 			{% if post.modified %}
-				<small>(updated <time datetime="{{ page.modified }}">{{ post.modified | date: "%-d %B %Y" }}</time>)</small>
+				<small>(updated <time datetime="{{ page.modified }}">{{ post.modified | date: site.date_format }}</time>)</small>
 			{% endif %}
 		</span>
 		<p class="post-meta__excerpt">
