@@ -1,5 +1,5 @@
 ---
-title: WebDAV Custom File Uploader in ShareX
+title: WebDAV File Uploader in ShareX
 excerpt: Fastmail dropped support for FTP file uploads, so I updated my ShareX workflow to use WebDAV instead.
 ---
 
