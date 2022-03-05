@@ -5,7 +5,7 @@ excerpt: Fastmail dropped support for FTP file uploads, so I updated my ShareX w
 
 Fastmail, my email provider, also offers file storage and simple public hosting of uploaded files. Until recently, it also allowed you to interface with your files via FTP. With these two things, it was trivial to set up ShareX, my Windows screenshot utility of choice, to automatically upload my screenshots to my custom domain for use in chat rooms and the like. But with the sunset of the Fastmail FTP interface, my upload settings stopped working. Fastmail still maintains a WebDAV interface, so I migrated my uploader to use that instead. Here's what I learned.
 
-WebDAV is actually super neat - it basically lets you send normal HTTP calls to interact with and modify files on the remote server. Stackoverflow illustrates that uploading a file with WebDAV is as easy as can be on the command line:
+WebDAV is actually super neat - it basically lets you send normal HTTP calls to interact with and modify files on the remote server. [Stackoverflow illustrates](https://stackoverflow.com/a/1205115) that uploading a file with WebDAV is as easy as can be on the command line:
 
     curl -T file https://my.server/path/to/file
 
