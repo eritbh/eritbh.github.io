@@ -12,7 +12,7 @@
 		</h2>
 		<span class="post-meta__date">
 			<time datetime="{{ page.date }}">
-				{{ post.date | date_to_string }}
+				{{ post.date | date: "%-d %B %Y" }}
 			</time>
 			{% if post.modified %}
 				<small>(updated <time datetime="{{ page.modified }}">{{ post.modified | date: "%-d %B %Y" }}</time>)</small>
