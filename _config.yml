@@ -12,8 +12,10 @@ footer_links:
 - name: Donate
   url: https://ko-fi.com/eritbh
 
+lang: en-US
 text_direction: ltr
 permalink: pretty
+date_format: %-d %B %Y
 plugins:
 - jekyll-feed
 - jekyll-github-metadata
