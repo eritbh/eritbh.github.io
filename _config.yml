@@ -15,7 +15,7 @@ footer_links:
 lang: en-US
 text_direction: ltr
 permalink: pretty
-date_format: %-d %B %Y
+date_format: "%-d %B %Y"
 plugins:
 - jekyll-feed
 - jekyll-github-metadata
