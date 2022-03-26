@@ -19,8 +19,15 @@
 <!-- Social/embed info tags -->
 <meta property="og:title" content="{% if page.title %}{{page.title}} &bull; {% endif %}{{site.title}}">
 <meta property="og:description" content="{{ page.excerpt | strip_html | truncatewords: 30 | default: site.description }}">
+{% if page.layout == "photo" %}
+<meta property="twitter:card" content="summary_large_image">
+<meta property="og:image" content="{{ page.src }}?variant=medium">
+<meta property="og:image:alt" content="{{ page.date_taken | date: site.date_format }}">
+{% else %}
+<meta property="twitter:card" content="summary">
 <meta property="og:image" content="{{ '/assets/umbreon-2x.png' | prepend: site.baseurl | prepend: site.url }}">
 <meta property="og:image:alt" content="Shiny Umbreon doing a run">
+{% endif %}
 <meta property="og:url" content="{{ page.url | prepend: site.baseurl | prepend: site.url }}">
 {% if page.id %}
 <meta property="og:type" content="article">
@@ -30,6 +37,5 @@
 {% else %}
 <meta property="og:type" content="website">
 {% endif %}
-<meta property="twitter:card" content="summary">
 <meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
