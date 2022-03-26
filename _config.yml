@@ -20,6 +20,11 @@ plugins:
 - jekyll-feed
 - jekyll-github-metadata
 
+collections:
+  photos:
+    output: true
+    permalink: /:collection/:path/
+
 defaults:
 - scope:
     type: posts
@@ -29,6 +34,11 @@ defaults:
     type: pages
   values:
     layout: default
+- scope:
+    type: photos
+  values:
+    layout: photo
+    title: ""
 
 include:
 - .well-known

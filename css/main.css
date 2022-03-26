@@ -219,6 +219,22 @@ main blockquote::before {
 	left: initial;
 	right: 0;
 }
+
+main figure {
+	margin: 1rem 0;
+	margin: calc(2 * var(--expanding-rem) + 1rem) 0;
+}
+main figure img {
+	display: block;
+	border: 1em solid #FFF;
+	margin-inline: -1em;
+}
+main figcaption {
+	text-align: center;
+	font-style: italic;
+	margin-block: 2rem;
+}
+
 main hr, main::after {
 	border: 0;
 	border-top: 0.125rem solid var(--foreground);
@@ -350,6 +366,36 @@ nav ul a {
 .post-meta__excerpt {
 	margin: 0.5rem 0 0;
 	margin: calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
+}
+
+/* Photos list */
+main .photos-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin-left: -0.5em;
+	margin-right: -0.5em;
+}
+.photos-list article {
+	box-sizing: border-box;
+	flex: 1 1 33%;
+	padding: 0 0.5em 1em;
+}
+@media (max-width: 600px) {
+	.photos-list article {
+		flex-basis: 50%;
+	}
+}
+.photos-list a {
+	display: block;
+	padding: 0.5em;
+	padding: calc(0.5em + 0.5 * var(--expanding-rem));
+	background: #FFF;
+}
+.photos-list img {
+	aspect-ratio: 1;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
 }
 
 /* Text buttons */

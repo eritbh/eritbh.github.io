@@ -1,0 +1,32 @@
+---
+layout: bare
+---
+{% include header.html %}
+
+<main>
+	<h1>
+		<time datetime="{{ page.date_taken }}">{{ page.date_taken | date: site.date_format }}</time>
+		{%- if page.title != "" %}: {{page.title}}{% endif %}
+	</h1>
+	<figure>
+		<a href="{{ page.src }}">
+			<img src="{{ page.src }}" alt="{{ page.title }}">
+		</a>
+
+		<figcaption>
+			{% if page.comment %}
+			<p>
+				{{ page.comment }}
+			</p>
+			{% endif %}
+			<p>
+				{% if page.camera %}{{ page.camera }}<br>{% endif %}
+				{% if page.shot_details %}{{ page.shot_details }}{% endif %}
+			</p>
+		</figcaption>
+	</figure>
+
+	{{ content }}
+</main>
+
+{% include footer.html %}

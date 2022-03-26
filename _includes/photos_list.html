@@ -1,0 +1,13 @@
+<div class="content-block photos-list">
+	{% assign sorted_photos = site.photos | sort: "date_taken" | reverse %}
+	{% if include.num > 0 %}
+		{% assign sorted_photos = sorted_photos | slice: 0, include.num %}
+	{% endif %}
+	{% for photo in sorted_photos %}
+	<article class="photos">
+		<a href="{{ photo.url }}">
+			<img src="{{ photo.src }}?variant=small" alt="{{ photo.date_taken | date: site.date_format }}">
+		</a>
+	</article>
+	{% endfor %}
+</div>
