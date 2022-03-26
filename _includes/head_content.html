@@ -1,11 +1,13 @@
 {%- if page.layout == "photo" -%}
-{%- assign page.title = page.date_taken | date: site.date_format -%}
+{%- assign document_title = page.date_taken | date: site.date_format -%}
+{%- else -%}
+{%- assign document_title = page.title -%}
 {%- endif -%}
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>{% if page.title and page.title != "" %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+<title>{% if document_title and document_title != "" %}{{ document_title }}{% else %}{{ site.title }}{% endif %}</title>
 
 <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
 
@@ -21,7 +23,7 @@
 <script src="/js/theme.js"></script>
 
 <!-- Social/embed info tags -->
-<meta property="og:title" content="{% if page.title and page.title != '' %}{{page.title}} &middot; {% endif %}{{site.title}}">
+<meta property="og:title" content="{% if pdocument_title and document_title != '' %}{{ document_title }} &middot; {% endif %}{{ site.title }}">
 <meta property="og:description" content="{{ page.excerpt | strip_html | truncatewords: 30 | default: site.description }}">
 {% if page.layout == "photo" %}
 <meta property="twitter:card" content="summary_large_image">
