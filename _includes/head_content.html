@@ -23,7 +23,7 @@
 <script src="/js/theme.js"></script>
 
 <!-- Social/embed info tags -->
-<meta property="og:title" content="{% if pdocument_title and document_title != '' %}{{ document_title }} &middot; {% endif %}{{ site.title }}">
+<meta property="og:title" content="{% if document_title and document_title != '' %}{{ document_title }} &middot; {% endif %}{{ site.title }}">
 <meta property="og:description" content="{{ page.excerpt | strip_html | truncatewords: 30 | default: site.description }}">
 {% if page.layout == "photo" %}
 <meta property="twitter:card" content="summary_large_image">
