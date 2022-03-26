@@ -10,7 +10,7 @@ layout: bare
 	</h1>
 	<figure>
 		<a href="{{ page.src }}">
-			<img src="{{ page.src }}" alt="{{ page.title }}">
+			<img src="{{ page.src }}" alt="{{ page.date_taken | date: site.date_format }}">
 		</a>
 
 		<figcaption>
