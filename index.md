@@ -17,3 +17,5 @@ You can find me on [GitHub](https://github.com/eritbh) and [Twitter](https://twi
 {% include post_list.html num=3 %}
 
 <a class="button" href="/posts">All Posts</a>
+
+<small>Also here's a link to <a rel="me" href="https://tech.lgbt/@eritbh">my Mastodon</a> for website verification purposes.</small>
