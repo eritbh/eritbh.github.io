@@ -120,7 +120,7 @@ img {
 
 main {
 	margin: 1rem 0 3rem;
-	margin: calc(2 * var(--expanding-rem) + 1rem) 0	calc(2 * var(--expanding-rem) + 3rem)
+	margin: calc(2 * var(--expanding-rem) + 1rem) 0 calc(3 * var(--expanding-rem) + 1.5rem)
 }
 
 main > :first-child {
@@ -240,6 +240,9 @@ main hr, main::after {
 	border-top: 0.125rem solid var(--foreground);
 	box-shadow: -7rem 0 var(--foreground);
 	margin: 2rem -1rem;
+}
+main::after {
+	margin: calc(3 * var(--expanding-rem) + 1.5rem) -1rem;
 }
 [dir=rtl] main hr,
 [dir=rtl] main::after {
