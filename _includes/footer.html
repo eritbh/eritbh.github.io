@@ -16,8 +16,8 @@
 			<li><a href="/feed.xml">Feed</a></li>
 		</ul>
 		<ul>
-			{% for link in site.footer_links %}
-			<li><a href="{{ link.url }}">{{ link.name }}</a></li>
+			{% for link in site.profile_links %}
+			<li><a href="{{ link.url }}" rel="me">{{ link.name }}</a></li>
 			{% endfor %}
 		</ul>
 	</nav>

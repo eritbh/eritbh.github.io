@@ -2,13 +2,13 @@ title: Hi I'm Erin
 description: Things too long or boring for Twitter
 author: eritbh
 
-footer_links:
-- name: Mail
-  url: mailto:hello@eritbh.me
-- name: GitHub
-  url: https://github.com/eritbh
+profile_links:
+- name: Mastodon
+  url: https://tech.lgbt/eritbh
 - name: Twitter
   url: https://twitter.com/eritbh
+- name: GitHub
+  url: https://github.com/eritbh
 - name: Donate
   url: https://ko-fi.com/eritbh
 
