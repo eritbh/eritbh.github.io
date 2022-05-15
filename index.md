@@ -15,5 +15,3 @@ Welcome to my site and blog and stuff! I post things sometimes. You can look at 
 {% include post_list.html num=3 %}
 
 <a class="button" href="/posts">All Posts</a>
-
-<small>Also here's a link to <a rel="me" href="https://tech.lgbt/@eritbh">my Mastodon</a> for website verification purposes.</small>
