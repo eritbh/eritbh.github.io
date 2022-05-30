@@ -1,7 +1,7 @@
 ---
 layout: bare
 ---
-{% include header.html %}
+{%- include header.html -%}
 
 <main>
 	<h1>
@@ -14,14 +14,14 @@ layout: bare
 		</a>
 
 		<figcaption>
-			{% if page.comment %}
+			{%- if page.comment -%}
 			<p>
 				{{ page.comment }}
 			</p>
-			{% endif %}
+			{%- endif -%}
 			<p>
-				{% if page.camera %}{{ page.camera }}<br>{% endif %}
-				{% if page.shot_details %}{{ page.shot_details }}{% endif %}
+				{%- if page.camera -%}{{ page.camera }}<br>{%- endif -%}
+				{%- if page.shot_details -%}{{ page.shot_details }}{%- endif -%}
 			</p>
 		</figcaption>
 	</figure>
@@ -29,4 +29,4 @@ layout: bare
 	{{ content }}
 </main>
 
-{% include footer.html %}
+{%- include footer.html -%}

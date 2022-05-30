@@ -1,23 +1,23 @@
 ---
 layout: bare
 ---
-{% include header.html %}
+{%- include header.html -%}
 
 <main>
 	<header class="post-meta">
 		<h1 class="post-meta__title">{{ page.title }}</h1>
 
-		{% if page.date %}
+		{%- if page.date -%}
 		<span class="post-meta__date">
 			<time datetime="{{ page.date }}">{{ page.date | date: site.date_format }}</time>
-			{% if page.modified %}
+			{% if page.modified -%}
 			<small>(updated <time datetime="{{ page.modified }}">{{ page.modified | date: site.date_format }}</time>)</small>
-			{% endif %}
+			{%- endif -%}
 		</span>
-		{% endif %}
+		{%- endif -%}
 	</header>
 
 	{{ content }}
 </main>
 
-{% include footer.html %}
+{%- include footer.html -%}

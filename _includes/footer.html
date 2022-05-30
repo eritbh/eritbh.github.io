@@ -1,24 +1,24 @@
 <footer>
-	{% assign modified_date = page.modified | default: page.date %}
-	{% if modified_date %}
+	{%- assign modified_date = page.modified | default: page.date -%}
+	{%- if modified_date -%}
 	<p>
 		<i>Last modified <time datetime="{{ modified_date }}">{{ modified_date | date: site.date_format }}</time></i>
 	</p>
-	{% endif %}
+	{%- endif -%}
 	<nav>
 		<ul>
-			{% assign sorted_pages = site.pages | sort: "order" %}
-			{% for page in sorted_pages %}
-			{% if page.order %}
+			{%- assign sorted_pages = site.pages | sort: "order" -%}
+			{%- for page in sorted_pages -%}
+			{%- if page.order -%}
 			<li><a href="{{ page.url }}">{{ page.navtitle | default: page.title }}</a></li>
-			{% endif %}
-			{% endfor %}
+			{%- endif -%}
+			{%- endfor -%}
 			<li><a href="/feed.xml">Feed</a></li>
 		</ul>
 		<ul>
-			{% for link in site.profile_links %}
+			{%- for link in site.profile_links -%}
 			<li><a href="{{ link.url }}" rel="me">{{ link.name }}</a></li>
-			{% endfor %}
+			{%- endfor -%}
 		</ul>
 	</nav>
 </footer>
