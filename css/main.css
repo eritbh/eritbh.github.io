@@ -280,8 +280,8 @@ main > h2::after {
 /* Footer content */
 
 footer {
-	margin-bottom: 3rem;
-	margin-bottom: calc(4 * var(--expanding-rem) + 3rem);
+	margin-bottom: 4rem;
+	margin-bottom: calc(3 * var(--expanding-rem) + 4rem);
 }
 
 nav {
