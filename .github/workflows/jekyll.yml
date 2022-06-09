@@ -25,4 +25,5 @@ jobs:
       env:
         PAGES_REPO_NWO: ${{ github.repository }}
       with:
+        target_branch: gh-pages
         token: ${{ secrets.GITHUB_TOKEN }}
