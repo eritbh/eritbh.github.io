@@ -23,6 +23,6 @@ jobs:
 
     - uses:  helaili/jekyll-action@v2
       env:
-        PAGES_REPO_NWO: ${{ github.event.repository.name }}
+        PAGES_REPO_NWO: ${{ github.repository }}
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
