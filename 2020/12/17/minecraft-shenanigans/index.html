@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Self-Hosting a Minecraft Server</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="Self-Hosting a Minecraft Server &middot; Hi I'm Erin">
+<meta property="og:description" content="A couple months ago, a friend of mine decided that we should play some modded Minecraft together. This meant we needed a private server to play on, and neither of..."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2020/12/17/minecraft-shenanigans/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2020-12-17 00:00:00 +0000">
+<meta property="article:modified_time" content="2020-12-18">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">Self-Hosting a Minecraft Server</h1><span class="post-meta__date">
+			<time datetime="2020-12-17 00:00:00 +0000">17 December 2020</time>
+			<small>(updated <time datetime="2020-12-18">18 December 2020</time>)</small></span></header>
+
+	<p>A couple months ago, a friend of mine decided that we should play some modded Minecraft together. This meant we needed a private server to play on, and neither of us really felt like paying for one, so I launched into a quest for the perfect self-hosted Minecraft server solution without knowing anything about how this is actually meant to be handled.</p>
+
+<h2 id="pc-hosting">PC hosting</h2>
+
+<p>We decided to play with the MC Eternal Lite modpack, which you can find <a href="https://www.curseforge.com/minecraft/modpacks/mc-eternal-lite">on CurseForge</a>, and the page offers a download for a server pack, which basically has a prebuilt server directory there for you, complete with a handy-dandy <code class="language-plaintext highlighter-rouge">.bat</code> file for starting it up. I already kept my PC on all the time anyway, so setup should be simple - just put the server pack somewhere on my desktop, start it up, and leave it running. Forward 25565 on my PC to the internet, make sure friend can connect, and we’re off.</p>
+
+<p>This setup was fine for a few days, but eventually I needed to reboot my PC for something, and I forgot to restart the server when I was done. I can’t be trusted to remember that sort of thing, so I set out looking for a way to start it up immediately on startup. Knowing that systemd services accomplish something similar on Linux, I figured running the server as a service under Windows would probably work similarly. I found a tool called <a href="http://nssm.cc/">NSSM, the Non-Sucking Service Manager</a>, which let me easily create a startup task for running the server’s start.bat, and that was that. Problem solved.</p>
+
+<h2 id="using-a-linux-server">Using a Linux server</h2>
+
+<p>Then came the issue of moving. I recently moved out of my parents’ house and into an apartment, and while living alone has brought me many benefits, it does have the drawback of not having a network I can tinker with and port forward on. So hosting the server on my PC was no longer an option. Given this happened right around Black Friday, and I had half a computer laying around, I decided I’d just get a deal on a cheap CPU and RAM and throw together a PC I could leave with my dad and use as a server. So now I’ve got myself a server. Drop a fresh Ubuntu install on it, set up SSH, rsync the server files from my PC, now I’ve got myself a Minecraft server. Throw together a systemd service definition for it, now I’ve got an auto-starting Minecraft server.</p>
+
+<p>Then I got greedy. I thought to myself, “This modpack sure takes a long time to load. It’d be nice if I didn’t have to load all the mods and join the server just to use console commands. But since I’m running the server as a service, I can’t talk to the console. Can I fix that?”</p>
+
+<p>It turns out, yes, you can! There’s no good way to just attach to the stdin of a service, but you <em>can</em> bind the stdin to something else in the service definition. If we make “something” a named pipe, then we can write commands into the pipe whenever we want, and the server will run them just like we’re typing into its console. So I set about doing something like that.</p>
+
+<p>After some effort I found <a href="https://blogs.gentoo.org/marecki/2020/09/16/console-bound-systemd-services-the-right-way/">this excellent blog post about the problem I was facing</a>, which describes a solution to this problem: By introducing a <code class="language-plaintext highlighter-rouge">socket</code> unit, you can automatically create a named pipe that binds to the standard input of your <code class="language-plaintext highlighter-rouge">service</code> unit. The configuration I’ve come up with looks a little something like this:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># minecraft-server.service
+</span><span class="nn">[Unit]</span>
+<span class="py">Description</span><span class="p">=</span><span class="s">Minecraft server</span>
+<span class="py">After</span><span class="p">=</span><span class="s">network.target</span>
+
+<span class="nn">[Service]</span>
+<span class="py">User</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">Group</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">Sockets</span><span class="p">=</span><span class="s">minecraft-server.socket</span>
+<span class="py">StandardInput</span><span class="p">=</span><span class="s">socket</span>
+<span class="py">StandardOutput</span><span class="p">=</span><span class="s">journal</span>
+<span class="py">StandardError</span><span class="p">=</span><span class="s">journal</span>
+<span class="py">WorkingDirectory</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server</span>
+<span class="py">ExecStart</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/start.sh</span>
+<span class="py">ExecStop</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/stop.sh</span>
+<span class="py">Restart</span><span class="p">=</span><span class="s">always</span>
+
+<span class="nn">[Install]</span>
+<span class="py">WantedBy</span><span class="p">=</span><span class="s">multi-user.target</span>
+</code></pre></div></div>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># minecraft-server.socket
+</span><span class="nn">[Unit]</span>
+<span class="py">Description</span><span class="p">=</span><span class="s">Command FIFO for Minecraft server</span>
+<span class="py">PartOf</span><span class="p">=</span><span class="s">minecraftserver.service</span>
+
+<span class="nn">[Socket]</span>
+<span class="py">ListenFIFO</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/run/stdin</span>
+<span class="py">DirectoryMode</span><span class="p">=</span><span class="s">0700</span>
+<span class="py">SocketMode</span><span class="p">=</span><span class="s">0600</span>
+<span class="py">SocketUser</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">SocketGroup</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">RemoveOnStop</span><span class="p">=</span><span class="s">true</span>
+</code></pre></div></div>
+
+<p>There’s a couple things to note about this setup.</p>
+
+<ul>
+  <li>
+    <p>I run stuff on my boxes under dedicated users whenever possible, so <code class="language-plaintext highlighter-rouge">minecraft</code> is a user (and group) I’m running the server as.</p>
+  </li>
+  <li>
+    <p>The socket unit creates the named pipe in the server folder, in a subdirectory I called <code class="language-plaintext highlighter-rouge">run</code>. This seemed to make the most sense for me, but it might be more appropriate to put it somewhere else.</p>
+  </li>
+  <li>
+    <p>The socket unit has <code class="language-plaintext highlighter-rouge">RemoveOnStop=true</code>, which prevents the named pipe from hanging around between restarts or anything weird like that.</p>
+  </li>
+</ul>
+
+<p>So now, if I want to run a server command while the server’s running, I can just log in as <code class="language-plaintext highlighter-rouge">minecraft</code> and echo to the pipe. And I can view the server’s output through <code class="language-plaintext highlighter-rouge">journalctl</code>, with some rough formatting with <code class="language-plaintext highlighter-rouge">cut</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>erin@homebox $ sudo su - minecraft
+minecraft@homebox $ echo "say hello" &gt;&gt; minecraft-server/run/stdin
+journalctl -u minecraft-server.service -f -n 10 | cut -d: -f7
+ [Server] hello
+</code></pre></div></div>
+
+<p>You may have also noticed that I specified <code class="language-plaintext highlighter-rouge">ExecStop=stop.sh</code> in the service definition. Now that we know we can write server commands somewhere, we can set up <code class="language-plaintext highlighter-rouge">systemctl stop minecraft-server</code> to perform a graceful shutdown of the server by sending the <code class="language-plaintext highlighter-rouge">stop</code> command and waiting until the process dies on its own:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># stop.sh</span>
+<span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="s2">"stop"</span> <span class="o">&gt;&gt;</span> run/stdin-fifo
+<span class="k">while </span><span class="nb">kill</span> <span class="nt">-0</span> “<span class="k">${</span><span class="nv">MAINPID</span><span class="k">}</span>” 2&gt; /dev/null<span class="p">;</span> <span class="k">do
+    </span><span class="nb">sleep </span>1s
+<span class="k">done</span>
+</code></pre></div></div>
+
+<h2 id="shenanigans">Shenanigans</h2>
+
+<p>I’ve accomplished everything I wanted, and now I’m getting cocky and want more. The server is a bit buggy and needs to be restarted every once in a while for certain things to work. I don’t play as frequently as my roommate, so having to field requests to restart the server is a bit annoying, but I don’t trust them not to cheat if I gave them op.</p>
+
+<p>As it turns out, there are few tools more useful than a Wifi-enabled Raspberry Pi with a big red button on it. With SSH access to the server, it can just restart the server any time the button is pushed. I threw it all in the <a href="https://twitter.com/eritbh/status/1339209799062446081">first project case I could find</a> and mounted it outside my roommate’s door, so they’ve always got easy access to it.</p>
+
+<p>There’s still a lot I could improve about this setup. It’d be neat to make a web panel that can show me logs and run console commands without me having to SSH into anything; I’m sure there’s other software out there that can do stuff like this, but I haven’t shopped around much. In any case, this experience has been an entertaining way to learn a bit more about managing services on Linux servers.</p>
+
+
+</main><footer><p>
+		<i>Last modified <time datetime="2020-12-18">18 December 2020</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>

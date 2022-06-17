@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en-US"><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://github.com/pages/eritbh/feed.xml" rel="self" type="application/atom+xml" /><link href="https://github.com/pages/eritbh/" rel="alternate" type="text/html" hreflang="en-US" /><updated>2022-06-17T21:56:10+00:00</updated><id>https://github.com/pages/eritbh/feed.xml</id><title type="html">Hi I’m Erin</title><subtitle>Things too long or boring for Twitter</subtitle><author><name>eritbh</name></author><entry><title type="html">WebDAV File Uploader in ShareX</title><link href="https://github.com/pages/eritbh/2022/03/05/sharex-webdav-upload/" rel="alternate" type="text/html" title="WebDAV File Uploader in ShareX" /><published>2022-03-05T00:00:00+00:00</published><updated>2022-03-05T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2022/03/05/sharex-webdav-upload</id><content type="html" xml:base="https://github.com/pages/eritbh/2022/03/05/sharex-webdav-upload/"><![CDATA[<p>Fastmail, my email provider, also offers file storage and simple public hosting of uploaded files. Until recently, it also allowed you to interface with your files via FTP. With these two things, it was trivial to set up ShareX, my Windows screenshot utility of choice, to automatically upload my screenshots to my custom domain for use in chat rooms and the like. But with the sunset of the Fastmail FTP interface, my upload settings stopped working. Fastmail still maintains a WebDAV interface, so I migrated my uploader to use that instead. Here’s what I learned.</p>
+
+<p>WebDAV is actually super neat - it basically lets you send normal HTTP calls to interact with and modify files on the remote server. <a href="https://stackoverflow.com/a/1205115">Stackoverflow illustrates</a> that uploading a file with WebDAV is as easy as can be on the command line:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -T file https://my.server/path/to/file
+</code></pre></div></div>
+
+<p>ShareX lets you set up custom uploaders that hit HTTP routes, so this should be easy. I couldn’t find any particular example of a generic WebDAV custom uploader, but I figured it out. You can use <code class="language-plaintext highlighter-rouge">https://my.server/path/to/$filename$</code> as the request URL, and ShareX will fill in the filename for you. Then, <code class="language-plaintext highlighter-rouge">curl -T</code> against an HTTP/S server just means to use <code class="language-plaintext highlighter-rouge">PUT</code> and pass the file as the request body, which we can accomplish by setting our ShareX uploader’s request method to “PUT” and setting the body upload option to “Binary”.</p>
+
+<p>Talking with Fastmail’s servers also requires user/password authentication, typically using an application-specific password instead of your actual account password. You can use <code class="language-plaintext highlighter-rouge">curl --user user:pass</code> to send authentication on the command line; internally, this base64 encodes the <code class="language-plaintext highlighter-rouge">user:pass</code> string and sets the <code class="language-plaintext highlighter-rouge">Authorization</code> header to <code class="language-plaintext highlighter-rouge">Basic &lt;that&gt;</code>. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#basic_authentication_scheme">MDN describes this in more detail</a>. Fortunately, ShareX also has a helper for base64 encoding things, so we can set <code class="language-plaintext highlighter-rouge">Authorization: Basic $base64:USER:PASS$</code> and call it a day. If your WebDAV server requires a different authentication scheme, you’ll have to change the value of that header accordingly.</p>
+
+<p>With Fastmail, I host my screenshots on a custom domain out of a specific folder in my file storage. ShareX has the ability to copy the uploaded image’s public URL after it’s uploaded, and to support that we just need to tell it where to look after upload. In my case it’s pretty simple: images get uploaded to my <code class="language-plaintext highlighter-rouge">Screenshots</code> folder and show up at the top of <code class="language-plaintext highlighter-rouge">https://i.eritbh.me</code>, so I set up the ShareX uploader’s “URL” setting as <code class="language-plaintext highlighter-rouge">https://i.eritbh.me/$filename$</code>. You may need something different depending on where your uploaded files are publically available.</p>
+
+<p>The full uploader template <a href="https://archive.eritbh.me/WebDAVUploader.sxcu">can be downloaded here</a>, and it looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "Version": "13.7.0",
+    "Name": "WebDAV File Uploader",
+    "DestinationType": "None",
+    "RequestMethod": "PUT",
+    "RequestURL": "https://your.server/path/to/$filename$",
+    "Headers": {
+        "Authorization": "Basic $base64:USER:PASS$"
+    },
+    "Body": "Binary",
+    "URL": "https://your.public.server/path/to/$filename$"
+}
+</code></pre></div></div>
+
+<p>Entering stuff manually in the ShareX custom uploader editor, it’ll look like this:</p>
+
+<p><img src="https://i.eritbh.me/GNqZqVkgCZd57.png" alt="Screenshot of ShareX custom uploader settings as specified above" /></p>
+
+<p>Hopefully this helps if, like me, you’re googling for “WebDAV ShareX uploader” and not finding any results. It’s pretty simple stuff in the end.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[Fastmail dropped support for FTP file uploads, so I updated my ShareX workflow to use WebDAV instead.]]></summary></entry><entry><title type="html">1Password and SSH Keys, Improved</title><link href="https://github.com/pages/eritbh/2022/01/25/1password-ssh-keys-improved/" rel="alternate" type="text/html" title="1Password and SSH Keys, Improved" /><published>2022-01-25T00:00:00+00:00</published><updated>2022-01-25T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2022/01/25/1password-ssh-keys-improved</id><content type="html" xml:base="https://github.com/pages/eritbh/2022/01/25/1password-ssh-keys-improved/"><![CDATA[<p>Last time I <a href="/2021/01/01/storing-ssh-keys-in-1password/">worked on a solution to my SSH key problem</a>, I wrote scripts to store all my SSH keys in my 1Password vault and load those keys into my SSH agent whenever I need them. To recap, I wrote two scripts: <code class="language-plaintext highlighter-rouge">op-create-identity</code>, which generated a new keypair and wrote it to a 1Password vault item, and <code class="language-plaintext highlighter-rouge">op-add-identities</code>, which searched for identity items in your vault and added all their keys to the <code class="language-plaintext highlighter-rouge">ssh-agent</code> automatically. However, I’ve recently run into a problem with this approach: if you have too many keys in your agent, logging into a server will try all those keys sequentially until it finds the one for that particular server. I’ve recently needed to add additional keys for new hosts I need to remote into, which means I’m loading enough keys into my agent that some servers will start disconnecting me for too many login attempts before the correct key is checked.</p>
+
+<p>To solve this problem, I needed to rework my utilities slightly. I needed to make sure each key was used only for its intended user and host, but I also wanted to avoid storing the keys on disk at any point (an advantage that attracted me to the <code class="language-plaintext highlighter-rouge">ssh-agent</code> approach in the first place). I knew that SSH config files could be used to set the keyfile used for authentication based on <code class="language-plaintext highlighter-rouge">Host</code> and <code class="language-plaintext highlighter-rouge">Match</code> directives, which seemed like a good place to start. However, <code class="language-plaintext highlighter-rouge">IdentityFile</code> directives can only be used to point at files, which means I also needed to use some sort of temporary in-memory filesystem to avoid persisting the keys across reboots.</p>
+
+<h2 id="changes-and-additions">Changes and additions</h2>
+
+<p>I’ve taken the opportunity to rename the scripts to something more permanent and add a few features to them as well. The new <code class="language-plaintext highlighter-rouge">op-ssh-fetch</code> script replaces <code class="language-plaintext highlighter-rouge">op-add-identities</code>, and instead of pulling all keys and throwing them through <code class="language-plaintext highlighter-rouge">ssh-add</code>, it writes each key to a folder in <code class="language-plaintext highlighter-rouge">/dev/shm</code> (or <code class="language-plaintext highlighter-rouge">/tmp</code> if <code class="language-plaintext highlighter-rouge">/dev/shm</code> doesn’t exist, though this can be customized). It then creates an SSH config file that points each host/user combination to the appropriate key, which I can include from my personal SSH config. Using <code class="language-plaintext highlighter-rouge">/dev/shm</code> means it can be guaranteed the keys will never be written to disk, though there is also a new <code class="language-plaintext highlighter-rouge">op-ssh-remove</code> script that can be used to nuke the storage folder manually.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ tree /dev/shm/op-ssh-utils
+/dev/shm/op-ssh-utils
+├── keys
+│   ├── 9n8gvb37hox9drhn8by742l98o
+│   └── 9n8gvb37hox9drhn8by742l98o.pub
+└── ssh_config
+
+$ cat /dev/shm/op-ssh-utils/ssh_config
+Match host 10.20.30.40 user erin
+  IdentityFile /dev/shm/op-ssh-utils/keys/9n8gvb37hox9drhn8by742l98o
+
+$ cat ~/.ssh/config
+Include /dev/shm/op-ssh-utils/ssh_config
+# ...
+</code></pre></div></div>
+
+<p>What’s more, <code class="language-plaintext highlighter-rouge">op-ssh-fetch</code> accepts the <code class="language-plaintext highlighter-rouge">-n</code> option to do nothing if keys have already been pulled, which can be used in combination with a shell alias to ensure keys are pulled the first time you run <code class="language-plaintext highlighter-rouge">ssh</code> after logging in. For example, I use the following in my <code class="language-plaintext highlighter-rouge">.bashrc</code>/<code class="language-plaintext highlighter-rouge">.zshrc</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH="~/.1password-ssh-utils/bin:$PATH"
+alias ssh="op-ssh-fetch -n &amp;&amp; ssh"
+</code></pre></div></div>
+
+<p>I’ve also slightly redone the way keys are stored in 1Password, storing username and host in separate fields and creating fields with certain internal identifiers so the script still works if a user renames the fields for some reason. This required me to do some manual migration of my items from the first proof-of-concept version, but I think this time I’ve settled on a layout that’s flexible enough to maintain going forward.</p>
+
+<p><a href="https://i.eritbh.me/unnw47w5ZJB1e.png"><img src="https://i.eritbh.me/unnw47w5ZJB1e.png" alt="Screenshot of the 1Password web interface, displaying a vault item titled &quot;10.20.30.40&quot; and subtitled &quot;erin.&quot; The entry has the following fields: host: 10.20.30.40; username: erin; password: concealed value; public key: the beginning of an RSA public key; private key: concealed value.&quot; " /></a></p>
+
+<p>The new <code class="language-plaintext highlighter-rouge">op-ssh-create</code> script replaces <code class="language-plaintext highlighter-rouge">op-create-identity</code>, and also adds some features like support for uploading an existing keypair rather than generating a new one, as well as making the <code class="language-plaintext highlighter-rouge">ssh-copy-id</code> and local registration steps optional in case you don’t need to re-add an existing key to a host but still want to upload it to 1Password.</p>
+
+<h2 id="release-and-future-plans">Release and future plans</h2>
+
+<p>I’m still working on the quality of my bash code, and there are several other features I want to add to this suite before I’ll be satisfied with it, but I’m pretty comfortable with the state of these tools and have made a 1.0 release for them <a href="https://github.com/eritbh/1password-ssh-utils">on Github</a>. If this sounds like something you’d be interested in using, please give it a try and let me know how it goes for you in <a href="https://github.com/eritbh/1password-ssh-utils/issues/new">a new issue</a> or <a href="https://twitter.com/eritbh/">on Twitter</a>! I’m always open to feedback and suggestions.</p>
+
+<p>In the future, I hope to move away from the hardcoded output dir to support multiple users on a single system (<a href="https://github.com/eritbh/1password-ssh-utils/issues/5">#5</a>), and I also want to explore more portable options for storing files in memory (<a href="https://github.com/eritbh/1password-ssh-utils/issues/6">#6</a>). There are also improvements I want to make to how SSH items are picked up from the vault to make the experience a bit simpler and more predictable when editing an item from other 1Password clients (<a href="https://github.com/eritbh/1password-ssh-utils/issues/3">#3</a>). I’m excited to continue working on this project.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[Releasing v1.0 of my key management suite, informed and improved by lessons learned from the original proof of concept.]]></summary></entry><entry><title type="html">Using Node.js Process Warnings</title><link href="https://github.com/pages/eritbh/2022/01/11/using-node-process-warnings/" rel="alternate" type="text/html" title="Using Node.js Process Warnings" /><published>2022-01-11T00:00:00+00:00</published><updated>2022-01-11T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2022/01/11/using-node-process-warnings</id><content type="html" xml:base="https://github.com/pages/eritbh/2022/01/11/using-node-process-warnings/"><![CDATA[<p><a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_event_warning">Process warnings</a> in Node are a very useful tool. They provide a standard interface for exposing warning information to developers, allowing library maintainers to communicate deprecations and possible issues to consumers while providing controls for application developers to deal with them. However, the documentation for them is surprisingly loose, and there are few documented best practictes for their use in libraries as far as I’ve seen. This article will be an introduction to process warnings and a set of guidelines for both package maintainers and application developers to follow when using process warnings.</p>
+
+<h2 id="why-use-process-warnings">Why use process warnings?</h2>
+
+<p>Process warnings exist to surface information to developers that indicate the possibility of undesired behavior occuring in the future. They could indicate runtime issues, like a misconfigured module that may not behave as expected, or a code quality issue, like uses of a deprecated or obsoleted API. Importantly, process warnings should be warnings that can be fixed by the developer—they shouldn’t be used to signal any old “warning” condition in your code, only issues that require developer attention to fix.</p>
+
+<h2 id="anatomy-of-a-warning">Anatomy of a warning</h2>
+
+<p>Process warnings are emitted via <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_process_emitwarning_warning_type_code_ctor"><code class="language-plaintext highlighter-rouge">process.emitWarning()</code></a>. This function has two forms, but both allow the same basic options:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">warning</code>, the warning message</li>
+  <li><code class="language-plaintext highlighter-rouge">type</code>, a string describing the type of warning (which defaults to just <code class="language-plaintext highlighter-rouge">'Warning'</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">code</code>, an optional unique identifier for the cause of the error</li>
+</ul>
+
+<p>By default, process warnings are displayed in the console output of the application and look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ node -e 'process.emitWarning("Warning message", "WarningType", "code")'
+(node:49466) [code] WarningType: Warning message
+</code></pre></div></div>
+
+<p>The first time a process warning is emitted, Node may inform you of one other property of process warnings: like thrown exceptions and <code class="language-plaintext highlighter-rouge">Error</code> objects, they are also capable of presenting tracebacks.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(Use `node --trace-warnings ...` to show where the warning was created)
+</code></pre></div></div>
+
+<p>Warnings also have an optional <code class="language-plaintext highlighter-rouge">detail</code> option, which is simply a string printed on a separate line after the warning message, as well as a <code class="language-plaintext highlighter-rouge">ctor</code> option, which takes a function that can be used to manipulate how the stack trace is displayed.</p>
+
+<h2 id="customizing-warning-display">Customizing warning display</h2>
+
+<p>Node accepts several command-line flags that can change the display of process warnings emitted in an application, such as the <code class="language-plaintext highlighter-rouge">--trace-warnings</code> flag mentioned before. These flags are documented in various places in <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_event_warning">the <code class="language-plaintext highlighter-rouge">warning</code> event documentation</a> and <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_process_emitwarning_warning_type_code_ctor">the <code class="language-plaintext highlighter-rouge">emitWarning</code> documentation</a>, and are summarized here.</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">--trace-warnings</code> to print a stack trace alongside warnings.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--no-warnings</code> to skip printing warnings to stdout.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--trace-deprecation</code> to print a stack trace alongside deprecation warnings.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--no-deprecation</code> to skip printing deprecation warnings to stdout.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--throw-deprecation</code> to treat deprecation warnings as thrown exceptions originating from the relevant <code class="language-plaintext highlighter-rouge">process.emitWarning</code> call.</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">--*-deprecation</code> flags apply only to deprecation warnings—warnings with their <code class="language-plaintext highlighter-rouge">type</code> set to exactly <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>. This is one of several warning types used by Node itself; however, it is the only warning type with its own specific command-line flags.</p>
+
+<p>Note that the <code class="language-plaintext highlighter-rouge">--no-warnings</code> and <code class="language-plaintext highlighter-rouge">--no-deprecation</code> flags prevent warnings from being logged to the console, but do not prevent warnings from being emitted to the <code class="language-plaintext highlighter-rouge">warning</code> event. This is useful if you want to log warnings in a custom format or to an external service rather than sending them to the console.</p>
+
+<h2 id="warning-types-and-origins">Warning types and origins</h2>
+
+<p>There is a <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#nodejs-warning-names">section of documentation discussing warning names</a> which gives a list of some commonly-used warning types that can be emitted by Node itself, including <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>. This section states that additional undocumented warning types may be emitted by Node; there is no exhaustive list of “official” warning types used by Node. There is also no guideline that the documented warning types can be used only by Node. This exposes a limitation of the process warning system: there is no standard way to identify the originator of a warning, whether it was the Node runtime, a specific library or package, or an application’s own code. Using <code class="language-plaintext highlighter-rouge">--trace-warnings</code> and referencing the traceback can usually help fill this gap, though it can fall short if the original structure of the application has been lost, for example through a bundling or code optimization process prior to runtime.</p>
+
+<p>Some of the documented warning types have very little use outside Node itself; most libraries likely have no reason to ever emit a <code class="language-plaintext highlighter-rouge">TimeoutOverflowWarning</code> unless they re-define the <code class="language-plaintext highlighter-rouge">setTimeout</code> global. Other types, like <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>, describe more general categories of behavior and are almost certainly applicable to libraries as well.</p>
+
+<p><code class="language-plaintext highlighter-rouge">DeprecationWarning</code> is a somewhat special warning type. In addition to the <code class="language-plaintext highlighter-rouge">--*-deprecation</code> flags discussed above that specifically modify the treatment of this warning type, the documentation about warning names also states that the <code class="language-plaintext highlighter-rouge">code</code> property of Node-emitted <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>s is used to identify the unique deprecation that caused the warning to be emitted:</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">'DeprecationWarning'</code> - Indicates use of a deprecated Node.js API or feature. Such warnings must include a ‘code’ property identifying the <a href="https://nodejs.org/docs/latest-v16.x/api/deprecations.html">deprecation code</a>. <sup><a href="https://nodejs.org/docs/latest-v16.x/api/process.html#nodejs-warning-names">[source]</a></sup></p>
+</blockquote>
+
+<h2 id="recommendations-for-package-maintainers">Recommendations for package maintainers</h2>
+
+<p>Keep warning messages relatively short; if a longer description or links to external resources/project documentation is required, use the <code class="language-plaintext highlighter-rouge">detail</code> option in addition to a shorter description in the main warning message.</p>
+
+<p>If your library has a complicated structure that may be confusing to consumers, consider using the <code class="language-plaintext highlighter-rouge">ctor</code> option to limit the stack trace of the emitted warning to only display lines that will be relevant to the consumer.</p>
+
+<p>If you deprecate any part of your package’s public API, use the <code class="language-plaintext highlighter-rouge">DeprecationWarning</code> warning type to surface this information to developers and give them control over how that information is handled. If possible, establish consistent deprecation codes for individual API changes. Warning <code class="language-plaintext highlighter-rouge">code</code>s for deprecation warnings should ideally include the name of your package or some other recognizeable identifier so that a developer reading the logs can know to look at your documentation when resolving the error. If possible, include a migration path away from the deprecated API in the warning message.</p>
+
+<p>For other types of warnings, avoid using warning types that are documented and used by Node. Prefer warning types in <code class="language-plaintext highlighter-rouge">PascalCase</code> that end with <code class="language-plaintext highlighter-rouge">Warning</code>. Be specific; descriptive warning types and messages are one of the few ways a developer can quickly identify what part of their code is causing the warning, especially when working with multiple libraries. The <code class="language-plaintext highlighter-rouge">code</code> option is not limited to <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>s; it may be useful to provide a code on all warnings to explicitly tie them to your library and provide a specific point of reference.</p>
+
+<p>Consider establishing documentation for your project that lets consumers find more information about individual warning codes. For example, if your library is hosted on Github, consider creating a Github issue or discussion for each warning that can be emitted and using its reference number as the code for that warning.</p>
+
+<h2 id="recommendations-for-package-consumers">Recommendations for package consumers</h2>
+
+<p>The command-line flags for managing warnings are your friends. Use them in development to help identify issues before your changes reach production. Consider making <code class="language-plaintext highlighter-rouge">--trace-warnings</code> and/or <code class="language-plaintext highlighter-rouge">--throw-deprecation</code> part of your normal testing runtime.</p>
+
+<p>In production, consider using the <code class="language-plaintext highlighter-rouge">--no-warnings</code> flag in combination with a <code class="language-plaintext highlighter-rouge">warning</code> event listener to report warnings to any external logging or analytics suite you may use.</p>
+
+<p>When listening to the <code class="language-plaintext highlighter-rouge">warning</code> event to filter out certain warnings or to act automatically on emitted warnings, compare <code class="language-plaintext highlighter-rouge">code</code>s when possible rather than just filtering warnings by <code class="language-plaintext highlighter-rouge">type</code>. This can help avoid accidentally swallowing errors with the same <code class="language-plaintext highlighter-rouge">type</code> emitted by other libraries.</p>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>Process warnings are not without their limitations and challenges. The inconsistent definition of warning types and codes, combined with the lack of any reliable mechanism for identifying the originator of a warning short of parsing tracebacks, makes them of limited usefulness for certain types of warnings, particularly those that carry lots of additional metadata or which should primarily be handled by code rather than by people. However, they have their place as a mechanism to assist with troubleshootinng and to surface unwanted behavior and API changes to consumers. To that end, I hope this piece is useful for determining when and how to implement and interface with process warnings.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[Process warnings in Node are a very useful tool. They provide a standard interface for exposing warning information to developers, allowing library maintainers to communicate deprecations and possible issues to consumers while providing controls for application developers to deal with them. However, the documentation for them is surprisingly loose, and there are few documented best practictes for their use in libraries as far as I’ve seen. This article will be an introduction to process warnings and a set of guidelines for both package maintainers and application developers to follow when using process warnings.]]></summary></entry><entry><title type="html">Adaptive Styling On the Modern Web</title><link href="https://github.com/pages/eritbh/2021/07/20/adaptive-styling/" rel="alternate" type="text/html" title="Adaptive Styling On the Modern Web" /><published>2021-07-20T00:00:00+00:00</published><updated>2021-07-20T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2021/07/20/adaptive-styling</id><content type="html" xml:base="https://github.com/pages/eritbh/2021/07/20/adaptive-styling/"><![CDATA[<p>When I sat down to do the styling for this blog, my goal was to create a relatively lightweight setup that would be readable, accessible, and visually clean, taking advantage of CSS and user-agent features rather than relying on fancy UI components or a heavy JS framework. In this post I’ll be talking a bit about the CSS features I used to do it, and why I’m reconsidering my attachment to CSS preprocessors for projects like this.</p>
+
+<h2 id="css-variables-and-page-themes">CSS Variables and Page Themes</h2>
+
+<p>You see that little dark/light button at the bottom right corner of your screen? That’s a theme toggle, baby, and it’s <em>stupid simple</em> thanks to the magic of CSS variables (<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/--*">Custom properties</a> and <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/var()"><code class="language-plaintext highlighter-rouge">var()</code></a>, to be precise). They can do all kinds of cool stuff, from simple color storage so you can stop repeating the same hex code over and over again, to more advanced, dynamic uses enabled by their cascading nature. For as long as I’ve known about these, I’ve thought of page themes as an ideal demonstration of how powerful they can be. It’s super simple to set up variables that change states based on an attribute of the <code class="language-plaintext highlighter-rouge">html</code> element:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">html</span> <span class="p">{</span>
+	<span class="py">--background</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+	<span class="py">--foreground</span><span class="p">:</span> <span class="no">black</span><span class="p">;</span>
+	<span class="py">--header</span><span class="p">:</span> <span class="no">red</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">html</span><span class="o">[</span><span class="nt">data-theme</span><span class="o">=</span><span class="s1">"dark"</span><span class="o">]</span> <span class="p">{</span>
+	<span class="py">--foreground</span><span class="p">:</span> <span class="no">white</span><span class="p">;</span>
+	<span class="py">--background</span><span class="p">:</span> <span class="no">gray</span><span class="p">;</span>
+	<span class="py">--header</span><span class="p">:</span> <span class="no">blue</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Because custom properties (the properties that start with <code class="language-plaintext highlighter-rouge">--</code>) cascade and inherit just like normal CSS properties, all the elements underneath <code class="language-plaintext highlighter-rouge">&lt;html&gt;</code> in the DOM will have the values of these properties set based on the <code class="language-plaintext highlighter-rouge">data-theme</code> attribute. Once you’ve got that set up, you only need to declare your other page styles once, in terms of the variables you just set:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">body</span> <span class="p">{</span>
+	<span class="nl">color</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--foreground</span><span class="p">);</span>
+	<span class="nl">background</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--background</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nt">header</span> <span class="p">{</span>
+	<span class="nl">background-color</span><span class="p">:</span> <span class="n">var</span><span class="p">(</span><span class="n">--header</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Then, to see the theme in action, you just need a little Javascript to toggle the theme attribute:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">toggleTheme</span> <span class="p">()</span> <span class="p">{</span>
+	<span class="kd">const</span> <span class="nx">currentTheme</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">getAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">data-theme</span><span class="dl">'</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="nx">currentTheme</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">dark</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">data-theme</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">light</span><span class="dl">'</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="nb">document</span><span class="p">.</span><span class="nx">documentElement</span><span class="p">.</span><span class="nx">setAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">data-theme</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dark</span><span class="dl">'</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>CSS variables let developers define theme properties all in one place, without the need for a preprocessor, and with support for switching theme based on pretty much any CSS selector. This flexibility being built into the language, filling a role that was long reserved for messy Webpack configurations in web apps, makes me legitimately excited to be writing plain, vanilla CSS again.</p>
+
+<p>You’ll also notice that this scheme allows for graceful degredation from the beginning. The script I presently have handling the theme toggle for this site, for example, adds the button it uses itself, so if Javascript is disabled or unsupported for some reason, the site still displays its default theme. What’s more, I’ve added some <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme"><code class="language-plaintext highlighter-rouge">prefers-color-scheme</code></a> magic to make the default theme degrade into the user’s OS theme, where available, whether scripts are enabled or not!</p>
+
+<h2 id="dynamic-sizing-and-responsiveness">Dynamic Sizing and Responsiveness</h2>
+
+<p>Responsive design is about more than just ensuring your content fits on phone screens. It’s about optimizing the viewing experience so it feels appropriate for the viewing context. Phone screens don’t have as much space for things like exaggerated headlines or wide margins, and while most modern CSS frameworks are designed with a “mobile-first” philosophy, they typically achieve this using rigid media queries that draw hard lines between “phone” and “tablet” and “laptop.”</p>
+
+<p>Personally, I prefer to do a bit more than hiding navigation menus behind hamburger icons when my site is being viewed from a phone. I want to match the density of the layout—text size, margin width, <em>everything</em>—to the size of the device presenting it. And to facilitate this, I’ve come up with a little helper I call the <strong>expanding <code class="language-plaintext highlighter-rouge">rem</code></strong>. Here’s what it looks like:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">:root</span> <span class="p">{</span>
+	<span class="py">--expanding-rem</span><span class="p">:</span> <span class="n">clamp</span><span class="p">(</span><span class="m">0rem</span><span class="p">,</span> <span class="p">(</span><span class="m">100vw</span> <span class="n">-</span> <span class="m">52rem</span><span class="p">)</span> <span class="p">/</span> <span class="m">12</span><span class="p">,</span> <span class="m">1rem</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This line uses <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/length#viewport-percentage_lengths"><code class="language-plaintext highlighter-rouge">vw</code></a> units and the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clamp()"><code class="language-plaintext highlighter-rouge">clamp()</code></a> function to create a length value that scales up with page size. The idea behind this value is that it can be used to decrease the size of whitespace, headline text, etc. based on the size of the screen. In my case, screens less than 52 rem (around 800 pixels) wide have the smallest amount of whitespace, and sites more than 64rem (around 1000 pixels) have the most. Using <code class="language-plaintext highlighter-rouge">clamp()</code> ensures that the base value always stays between 0 and 1 rem, and when used in combination with <code class="language-plaintext highlighter-rouge">calc()</code>, it forms the basis of the responsive design of this site. Page headings and margins are scaled down on mobile devices so the content fits comfortably on the screen, while the overall layout is spaced more generously on desktops, where increased screen size affords more space to visual emphasis and clarity.</p>
+
+<p>In order to use the unit, <code class="language-plaintext highlighter-rouge">calc()</code> is used to create lengths that scape proportionally to the expanding unit. If you want a length that scales between 0 and 2, instead of 0 and 1, just multiply it by 2. If you want a length that scales between 1 and 3, multiply by 2 and add 1. The math can seem tricky to work out at first, but pretty much any range you want can be expressed by a multiplication and an addition. Here’s some examples:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">h1</span> <span class="p">{</span>
+	<span class="c">/* Vertical padding varies between 1rem and 3rem */</span>
+	<span class="nl">margin</span><span class="p">:</span> <span class="n">calc</span><span class="p">(</span><span class="m">2</span> <span class="err">*</span> <span class="n">var</span><span class="p">(</span><span class="n">--expanding-rem</span><span class="p">)</span> <span class="err">+</span> <span class="m">1rem</span><span class="p">)</span> <span class="m">0</span><span class="p">;</span>
+	<span class="c">/* Font size varies between 1.5 and 3 times larger than body font size */</span>
+	<span class="nl">font-size</span><span class="p">:</span> <span class="n">calc</span><span class="p">(</span><span class="m">1.5</span> <span class="err">*</span> <span class="n">var</span><span class="p">(</span><span class="n">--expanding-rem</span><span class="p">)</span> <span class="err">+</span> <span class="m">1.5rem</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I personally chose to use <code class="language-plaintext highlighter-rouge">rem</code> as the base unit for this layout, but this technique isn’t limited to <code class="language-plaintext highlighter-rouge">rem</code> - in fact, it can be generically applied to basically any unit. For example, if you want to make a value that scales between 0 and 1px between the screen widths 400px and 800px, you could use the following to get your <code class="language-plaintext highlighter-rouge">--expanding-unit</code>:</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">:root</span> <span class="p">{</span>
+	<span class="py">--scale-width-min</span><span class="p">:</span> <span class="m">400px</span><span class="p">;</span>
+	<span class="py">--scale-width-max</span><span class="p">:</span> <span class="m">800px</span><span class="p">;</span>
+	<span class="py">--expanding-unit</span><span class="p">:</span> <span class="n">clamp</span><span class="p">(</span><span class="m">0px</span><span class="p">,</span> <span class="p">(</span><span class="m">100vw</span> <span class="n">-</span> <span class="n">var</span><span class="p">(</span><span class="n">--scale-width-min</span><span class="p">))</span> <span class="p">/</span> <span class="p">(</span><span class="n">var</span><span class="p">(</span><span class="n">--scale-width-max</span><span class="p">)</span> <span class="n">-</span> <span class="n">var</span><span class="p">(</span><span class="n">--scale-width-min</span><span class="p">)),</span> <span class="m">1px</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>I could go a lot more in depth about my thoughts on web design as a whole, and maybe I will in a future post. But for now I figured I would just highlight a couple of the things that make me excited about CSS and designing for the web, in a way I haven’t been since I first started learning web technologies years ago. Hopefully this information is helpful!</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[When I sat down to do the styling for this blog, my goal was to create a relatively lightweight setup that would be readable, accessible, and visually clean, taking advantage of CSS and user-agent features rather than relying on fancy UI components or a heavy JS framework. In this post I’ll be talking a bit about the CSS features I used to do it, and why I’m reconsidering my attachment to CSS preprocessors for projects like this.]]></summary></entry><entry><title type="html">Moving Old Asynchronous Systems to ES6 Modules</title><link href="https://github.com/pages/eritbh/2021/07/19/async-es-module-migration/" rel="alternate" type="text/html" title="Moving Old Asynchronous Systems to ES6 Modules" /><published>2021-07-19T00:00:00+00:00</published><updated>2021-07-19T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2021/07/19/async-es-module-migration</id><content type="html" xml:base="https://github.com/pages/eritbh/2021/07/19/async-es-module-migration/"><![CDATA[<p>I think ES modules are an awesome addition to Javascript. They allow static analysis across files, allowing for things like tree shaking and making VS Code’s Intellisense feature even more useful for large projects. However, I’ve been working to bring these advantages to an older codebase, and it presented some challenges that I haven’t had in other projects; I thought I’d document my findings here.</p>
+
+<p>This project is a browser extension that’s built without any bundling or dependency management, because it doesn’t really have any dependencies. I really like writing native Javascript without transpiling or bundling, but in order to make a maintainable system before modules were available in all browsers, the codebase relied heavily on adding properties to the global object that are referenced from other files. On the surface, converting this structure to a module-based system seems easy—identify all the global properties added by various files, convert them to exports, import the file wherever those values are needed, and call it a day. However, modules do have one major difference from normal objects that prevents this from working: Module exports can’t be reassigned asynchronously. Once the module is executed synchronously, from top to bottom, any other reassignments from within promises, callbacks, or timeouts won’t be seen by any other file importing it.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// a.js</span>
+<span class="kd">let</span> <span class="nx">foo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">foo</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="k">export</span> <span class="p">{</span><span class="nx">foo</span><span class="p">};</span>
+
+<span class="c1">// b.js</span>
+<span class="k">import</span> <span class="p">{</span><span class="nx">foo</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./a.js</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="p">},</span> <span class="mi">200</span><span class="p">);</span>
+<span class="c1">// Output: 1 (not 2!)</span>
+</code></pre></div></div>
+
+<p>The code I’m working on doesn’t just assign constants and functions to the global object, it also stores application state there, and references it a <em>lot</em>. On startup, for example, the extension checks if you’re on a specific website, and if you are, tries to detect your account’s username. This is done asynchronously, so an exported value can’t be used here, but I still want to have a statically exported way to obtain that value from elsewhere, without having to change up consumer code too much.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// util.js</span>
+<span class="c1">// Wait a second to let the page fully load</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="c1">// Store the user's username </span>
+	<span class="nb">window</span><span class="p">.</span><span class="nx">username</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">user-menu</span><span class="dl">'</span><span class="p">).</span><span class="nx">textContent</span><span class="p">;</span>
+<span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1">// contentScript.js</span>
+<span class="c1">// When the submit button is clicked, handle it specially</span>
+<span class="kd">let</span> <span class="nx">submitButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type=submit]</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">submitButton</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The obvious solution would be to use promises, but a typical async function won’t quite cut it - you don’t want to wait a full second <em>every time</em> a different part of the content script needs access to the user’s username! It’s a value that you only need to compute once, when the page loads, and it should be immediately available after that every time. How can we accomplish this?</p>
+
+<p>Well, it turns out you don’t need a function at all - this is a good use case for constructing and exporting a promise directly. Here’s the module-oriented solution I came up with:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// util.js</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="c1">// Wait a second to let the page fully load</span>
+	<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+		<span class="c1">// Resolve with the user's username</span>
+		<span class="kd">let</span> <span class="nx">username</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">user-menu</span><span class="dl">'</span><span class="p">).</span><span class="nx">textContent</span><span class="p">;</span>
+		<span class="nx">resolve</span><span class="p">(</span><span class="nx">username</span><span class="p">);</span>
+	<span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// contentScript.js</span>
+<span class="k">import</span> <span class="p">{</span><span class="nx">username</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./util.js</span><span class="dl">'</span><span class="p">;</span>
+<span class="c1">// When the submit button is clicked, handle it specially</span>
+<span class="kd">let</span> <span class="nx">submitButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type=submit]</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">submitButton</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span> <span class="nx">username</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>See how that works? A promise is the same object even when it resolves, so the same object will be imported every time someone requests the username, and if it’s already been retrieved from the page, there’s no wait necessary - the promise caches its resolution value for us, and we can <code class="language-plaintext highlighter-rouge">await</code> it at any time to retrieve it without a perceptible delay.</p>
+
+<p>The downside of this method is that for a large project, you may have a lot of refactoring to do in order to incorporate promises in what once were assumed to be “synchronous” bits of code. However, this is actually an advantage of using promises for tasks like this—they force you to acknowledge that code using them is not guaranteed to have a return value immediately. It can cause a lot of churn, and I really did try to find a “synchronous” workaround that would mean less manual conversion, but eventually I realized that the spec prevents you from modifying exports in order to prevent the exact same class of asynchronous bugs that asynchronous structures like callbacks and promises are designed to prevent. In the end, ES6 modules ended up being the feature that pushed me to modernize a large chunk of our codebase, and the project will be better for it.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[I think ES modules are an awesome addition to Javascript. They allow static analysis across files, allowing for things like tree shaking and making VS Code’s Intellisense feature even more useful for large projects. However, I’ve been working to bring these advantages to an older codebase, and it presented some challenges that I haven’t had in other projects; I thought I’d document my findings here.]]></summary></entry><entry><title type="html">Managing SSH Keys with 1Password</title><link href="https://github.com/pages/eritbh/2021/01/01/storing-ssh-keys-in-1password/" rel="alternate" type="text/html" title="Managing SSH Keys with 1Password" /><published>2021-01-01T00:00:00+00:00</published><updated>2021-01-01T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2021/01/01/storing-ssh-keys-in-1password</id><content type="html" xml:base="https://github.com/pages/eritbh/2021/01/01/storing-ssh-keys-in-1password/"><![CDATA[<p>I have a problem: I can’t maintain an OS instance for very long. On my laptop, I’ll get frustrated with either macOS or Ubuntu and swap between the two a couple times a year, and on my Windows desktop, all my code projects are cloned to WSL, which I manage to corrupt surprisingly often. When I install a new OS, I often forget to take things like SSH keys with me, which means that I end up leaving password authentication enabled on all my servers to avoid locking myself out on the regular.</p>
+
+<p>A couple days ago I decided I wanted to solve this problem. I’ve been a 1Password customer for a couple months now, and it’s been an amazing experience using its integrations for filling passwords and 2-factor authentication tokens across my devices. What if I could just store my SSH keys in there too? Is there an integration for that? Well, not quite—but there <em>is</em> <a href="https://support.1password.com/command-line-getting-started">a CLI</a>.</p>
+
+<p>Armed with the power of shell scripting, I set out to create an integration that would let me manage my SSH keys from the terminal. The idea is to create an SSH key pair for each server I need to connect to, and have the public and private keys stored only in 1Password. Then, I want these keys to be fetched automatically when I log into my computer and added to the SSH agent without the keys being stored on disk.</p>
+
+<p>1Password’s API seems to be mostly JSON-based, so this is all achievable with <a href="https://twitter.com/eritbh/status/1344731396879822848?s=20">a bit of <code class="language-plaintext highlighter-rouge">jq</code> witchcraft</a>. The final result is two scripts: <code class="language-plaintext highlighter-rouge">op-create-identity</code>, which creates key pairs, saves them to my vault, and adds them to servers, and <code class="language-plaintext highlighter-rouge">op-add-identities</code>, which pulls all key pairs from the vault and adds them to the SSH agent. I just dropped these scripts, along with the <code class="language-plaintext highlighter-rouge">op</code> binary, into <code class="language-plaintext highlighter-rouge">~/.local/bin</code> for easy access. You can check the code I came up with in <a href="https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c">this Gist</a>.</p>
+
+<p>The process of fetching keys needs to be interactive since you need to type your vault password, so getting it to happen when you first log in is a bit tricky. My first thought was to drop some conditional code in my shell profile that would run it when I open a terminal if it hadn’t been run yet, but I haven’t worked out all the details for something like that yet. For now, since I’m using Ubuntu on my laptop right now, I just created a new startup application that runs <code class="language-plaintext highlighter-rouge">gnome-terminal -e op-add-identities</code> when I log in. This approach isn’t perfect, and won’t work for me with my WSL install since there’s no “Startup Applications” GUI and no <code class="language-plaintext highlighter-rouge">gnome-terminal</code>, but it’ll be good enough for now. In the future, I’ll probably revise the script to work how I originally intended.</p>
+
+<p>Hopefully this will be useful for anyone looking to set up something similar—I couldn’t find many resources about this sort of thing when I was looking, just a couple old Reddit threads and 1Password forum posts that didn’t seem to include any complete solutions. I’ll update this post and the Gist if I ever get around to making the improvements I mentioned.</p>
+
+<script src="https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c.js"></script>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[I have a problem: I can’t maintain an OS instance for very long. On my laptop, I’ll get frustrated with either macOS or Ubuntu and swap between the two a couple times a year, and on my Windows desktop, all my code projects are cloned to WSL, which I manage to corrupt surprisingly often. When I install a new OS, I often forget to take things like SSH keys with me, which means that I end up leaving password authentication enabled on all my servers to avoid locking myself out on the regular.]]></summary></entry><entry><title type="html">Why is Bundling a Browser Extension So Hard?</title><link href="https://github.com/pages/eritbh/2020/12/24/bundling-web-extensions/" rel="alternate" type="text/html" title="Why is Bundling a Browser Extension So Hard?" /><published>2020-12-24T00:00:00+00:00</published><updated>2020-12-24T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2020/12/24/bundling-web-extensions</id><content type="html" xml:base="https://github.com/pages/eritbh/2020/12/24/bundling-web-extensions/"><![CDATA[<p>Have you ever tried to make a browser extension? Despite sharing the same technologies as the rest of the web, it seems to me that extension developers are a rare breed - and the amount of tooling that exists in the web extension space seems to reflect this.</p>
+
+<p>My latest predicament revolves around wanting to use ES6 modules to structure extension code. Modules are pretty widely supported across browsers I care about in 2020, but there’s one small problem: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1536094">Firefox doesn’t support them in extension content scripts.</a> (A <em>content script</em> is just some Javascript (and/or CSS) that your extension runs in the context of a webpage.) Since the bulk of an extension’s logic is often handled in a content script, not being able to use modules in this part of your extension’s code is a bit of a drag.</p>
+
+<p>It’s obviously possible to split your code into multiple files even without the benefit of modules, but it’s messy. It requires adding properties to the <code class="language-plaintext highlighter-rouge">window</code> so you can access your stuff, and while global namespace pollution isn’t a <em>huge</em> concern in content scripts thanks to <a href="https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#DOM_access">something Firefox calls “X-ray vision,”</a> it does require you to keep track of the order your various scripts are loaded to ensure you don’t try to use one of your files before it’s loaded. This gets especially tricky if your project includes circular dependencies, and if you use external libraries, you’re stuck either pulling them into your project manually or writing your own scripts to automate the process. There doesn’t seem to be any generic solution for this.</p>
+
+<p>So recently I’ve been looking for a build platform that might help me solve these problems. Tools like Rollup and Webpack have no problem converting from module-based source files to more widely-compatible formats, and most even support dead code elimination through static analysis of your imported modules. Great! But of course, it’s not as easy as that.</p>
+
+<p>Browser extensions can have multiple content scripts, a background script, and additional worker scripts. The browser is responsible for executing all these scripts at the appropriate times in the appropriate contexts, and all these individual entry points are defined in your extension’s <code class="language-plaintext highlighter-rouge">manifest.json</code> file. However, because some of those scripts will end up sharing dependencies (you may have a utility module that contains functions used by a both content script and a background script, for example), it’s inefficient to just package each entry point as its own monolithic blob. That would mean every entry point would contain duplicate copies of the shared code.</p>
+
+<p>This isn’t a problem unique to browser extensions, and bundlers have come up with a solution: <em>code splitting.</em> This is when the bundler takes in multiple entry points, analyzes them for shared dependencies, and creates bundles for them that are dynamically imported at runtime by each entry point bundle. For example, if you have an entry point <code class="language-plaintext highlighter-rouge">a</code> that depends on <code class="language-plaintext highlighter-rouge">b</code> and <code class="language-plaintext highlighter-rouge">c</code>, and another entry point <code class="language-plaintext highlighter-rouge">d</code> that relies on <code class="language-plaintext highlighter-rouge">c</code> and <code class="language-plaintext highlighter-rouge">e</code>, bundling would give you just three bundles: one that contains <code class="language-plaintext highlighter-rouge">a</code> and <code class="language-plaintext highlighter-rouge">b</code>, one that contains <code class="language-plaintext highlighter-rouge">d</code> and <code class="language-plaintext highlighter-rouge">e</code>, and one that contains the shared dependency <code class="language-plaintext highlighter-rouge">c</code>.</p>
+
+<p>This approach is brilliant for web applications, because it allows you to lower the number of requests needed to load your app, but that was never the issue we were trying to solve for browser extensions. A browser extension doesn’t care much about how many script files it loads, because every request is just a hit to the local disk, rather than an actual internet request. We only care about getting code that doesn’t use unsupported ES6 features, and that doesn’t duplicate shared parts of our code. And if a bundler is generating bundles that rely on each other… surprise, they’re doing it by emitting dynamic <code class="language-plaintext highlighter-rouge">import()</code> expressions as part of the entry bundles (or by combining web requests and and <code class="language-plaintext highlighter-rouge">eval</code>, which isn’t allowed in content scripts either). So that solution is out.</p>
+
+<p>The core of the issue is this: Whereas most bundlers try to emulate the <code class="language-plaintext highlighter-rouge">import</code>/<code class="language-plaintext highlighter-rouge">export</code> relationship between modules, breaking an extension script into multiple files involves adding multiple files to <code class="language-plaintext highlighter-rouge">manifest.json</code>. Extension scripts can have dependencies, but they’re not listed as part of the entry point in anything like an <code class="language-plaintext highlighter-rouge">import</code> statement; instead, dependencies of that file have to be loaded beforehand by placing them earlier in the manifest’s list of files to load. This also means that dependencies can only expose things to entry points by setting global variables, and the entry point needs to be written with prior knowledge of what those variables will be. So for a bundler to really work for extensions, it needs to be able to convert the dependency tree of its source files into a flat, ordered list of files to load, where imports and exports are converted to namespaced values on the global object.</p>
+
+<p>The issue here, I think, is that bundlers just aren’t familiar with what I’m looking for. They’re built to cater to an audience that’s building web applications, not browser extensions. They have all the capabilities I’d need, really—they can convert modules to IIFE-based scripts that write their exports to <code class="language-plaintext highlighter-rouge">window</code> properties, and they can do static analysis to facilitate lightweight code sharing, there’s just not a solution I’ve found that can put it all together yet.</p>
+
+<p>I’ve started working on a project that should hopefully do everything I need it to, but it’s messy - it’s going to be built on Rollup, but it’s going to require a custom plugin that creates additional Rollup processes to perform all the transformations necessary. Hopefully I can get it usable, even if it feels like complete overkill for what <em>seems</em> like it should be a simple problem to tackle.</p>
+
+<p>In any case, go thank the dev of your favorite browser extension. I don’t envy folks like the uBlock Origin maintainers who have resorted to <a href="https://github.com/gorhill/uBlock/tree/master/tools">a bunch of shell scripts for every platform they build for</a>.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[Have you ever tried to make a browser extension? Despite sharing the same technologies as the rest of the web, it seems to me that extension developers are a rare breed - and the amount of tooling that exists in the web extension space seems to reflect this.]]></summary></entry><entry><title type="html">Self-Hosting a Minecraft Server</title><link href="https://github.com/pages/eritbh/2020/12/17/minecraft-shenanigans/" rel="alternate" type="text/html" title="Self-Hosting a Minecraft Server" /><published>2020-12-17T00:00:00+00:00</published><updated>2020-12-17T00:00:00+00:00</updated><id>https://github.com/pages/eritbh/2020/12/17/minecraft-shenanigans</id><content type="html" xml:base="https://github.com/pages/eritbh/2020/12/17/minecraft-shenanigans/"><![CDATA[<p>A couple months ago, a friend of mine decided that we should play some modded Minecraft together. This meant we needed a private server to play on, and neither of us really felt like paying for one, so I launched into a quest for the perfect self-hosted Minecraft server solution without knowing anything about how this is actually meant to be handled.</p>
+
+<h2 id="pc-hosting">PC hosting</h2>
+
+<p>We decided to play with the MC Eternal Lite modpack, which you can find <a href="https://www.curseforge.com/minecraft/modpacks/mc-eternal-lite">on CurseForge</a>, and the page offers a download for a server pack, which basically has a prebuilt server directory there for you, complete with a handy-dandy <code class="language-plaintext highlighter-rouge">.bat</code> file for starting it up. I already kept my PC on all the time anyway, so setup should be simple - just put the server pack somewhere on my desktop, start it up, and leave it running. Forward 25565 on my PC to the internet, make sure friend can connect, and we’re off.</p>
+
+<p>This setup was fine for a few days, but eventually I needed to reboot my PC for something, and I forgot to restart the server when I was done. I can’t be trusted to remember that sort of thing, so I set out looking for a way to start it up immediately on startup. Knowing that systemd services accomplish something similar on Linux, I figured running the server as a service under Windows would probably work similarly. I found a tool called <a href="http://nssm.cc/">NSSM, the Non-Sucking Service Manager</a>, which let me easily create a startup task for running the server’s start.bat, and that was that. Problem solved.</p>
+
+<h2 id="using-a-linux-server">Using a Linux server</h2>
+
+<p>Then came the issue of moving. I recently moved out of my parents’ house and into an apartment, and while living alone has brought me many benefits, it does have the drawback of not having a network I can tinker with and port forward on. So hosting the server on my PC was no longer an option. Given this happened right around Black Friday, and I had half a computer laying around, I decided I’d just get a deal on a cheap CPU and RAM and throw together a PC I could leave with my dad and use as a server. So now I’ve got myself a server. Drop a fresh Ubuntu install on it, set up SSH, rsync the server files from my PC, now I’ve got myself a Minecraft server. Throw together a systemd service definition for it, now I’ve got an auto-starting Minecraft server.</p>
+
+<p>Then I got greedy. I thought to myself, “This modpack sure takes a long time to load. It’d be nice if I didn’t have to load all the mods and join the server just to use console commands. But since I’m running the server as a service, I can’t talk to the console. Can I fix that?”</p>
+
+<p>It turns out, yes, you can! There’s no good way to just attach to the stdin of a service, but you <em>can</em> bind the stdin to something else in the service definition. If we make “something” a named pipe, then we can write commands into the pipe whenever we want, and the server will run them just like we’re typing into its console. So I set about doing something like that.</p>
+
+<p>After some effort I found <a href="https://blogs.gentoo.org/marecki/2020/09/16/console-bound-systemd-services-the-right-way/">this excellent blog post about the problem I was facing</a>, which describes a solution to this problem: By introducing a <code class="language-plaintext highlighter-rouge">socket</code> unit, you can automatically create a named pipe that binds to the standard input of your <code class="language-plaintext highlighter-rouge">service</code> unit. The configuration I’ve come up with looks a little something like this:</p>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># minecraft-server.service
+</span><span class="nn">[Unit]</span>
+<span class="py">Description</span><span class="p">=</span><span class="s">Minecraft server</span>
+<span class="py">After</span><span class="p">=</span><span class="s">network.target</span>
+
+<span class="nn">[Service]</span>
+<span class="py">User</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">Group</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">Sockets</span><span class="p">=</span><span class="s">minecraft-server.socket</span>
+<span class="py">StandardInput</span><span class="p">=</span><span class="s">socket</span>
+<span class="py">StandardOutput</span><span class="p">=</span><span class="s">journal</span>
+<span class="py">StandardError</span><span class="p">=</span><span class="s">journal</span>
+<span class="py">WorkingDirectory</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server</span>
+<span class="py">ExecStart</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/start.sh</span>
+<span class="py">ExecStop</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/stop.sh</span>
+<span class="py">Restart</span><span class="p">=</span><span class="s">always</span>
+
+<span class="nn">[Install]</span>
+<span class="py">WantedBy</span><span class="p">=</span><span class="s">multi-user.target</span>
+</code></pre></div></div>
+
+<div class="language-ini highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># minecraft-server.socket
+</span><span class="nn">[Unit]</span>
+<span class="py">Description</span><span class="p">=</span><span class="s">Command FIFO for Minecraft server</span>
+<span class="py">PartOf</span><span class="p">=</span><span class="s">minecraftserver.service</span>
+
+<span class="nn">[Socket]</span>
+<span class="py">ListenFIFO</span><span class="p">=</span><span class="s">/home/minecraft/minecraft-server/run/stdin</span>
+<span class="py">DirectoryMode</span><span class="p">=</span><span class="s">0700</span>
+<span class="py">SocketMode</span><span class="p">=</span><span class="s">0600</span>
+<span class="py">SocketUser</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">SocketGroup</span><span class="p">=</span><span class="s">minecraft</span>
+<span class="py">RemoveOnStop</span><span class="p">=</span><span class="s">true</span>
+</code></pre></div></div>
+
+<p>There’s a couple things to note about this setup.</p>
+
+<ul>
+  <li>
+    <p>I run stuff on my boxes under dedicated users whenever possible, so <code class="language-plaintext highlighter-rouge">minecraft</code> is a user (and group) I’m running the server as.</p>
+  </li>
+  <li>
+    <p>The socket unit creates the named pipe in the server folder, in a subdirectory I called <code class="language-plaintext highlighter-rouge">run</code>. This seemed to make the most sense for me, but it might be more appropriate to put it somewhere else.</p>
+  </li>
+  <li>
+    <p>The socket unit has <code class="language-plaintext highlighter-rouge">RemoveOnStop=true</code>, which prevents the named pipe from hanging around between restarts or anything weird like that.</p>
+  </li>
+</ul>
+
+<p>So now, if I want to run a server command while the server’s running, I can just log in as <code class="language-plaintext highlighter-rouge">minecraft</code> and echo to the pipe. And I can view the server’s output through <code class="language-plaintext highlighter-rouge">journalctl</code>, with some rough formatting with <code class="language-plaintext highlighter-rouge">cut</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>erin@homebox $ sudo su - minecraft
+minecraft@homebox $ echo "say hello" &gt;&gt; minecraft-server/run/stdin
+journalctl -u minecraft-server.service -f -n 10 | cut -d: -f7
+ [Server] hello
+</code></pre></div></div>
+
+<p>You may have also noticed that I specified <code class="language-plaintext highlighter-rouge">ExecStop=stop.sh</code> in the service definition. Now that we know we can write server commands somewhere, we can set up <code class="language-plaintext highlighter-rouge">systemctl stop minecraft-server</code> to perform a graceful shutdown of the server by sending the <code class="language-plaintext highlighter-rouge">stop</code> command and waiting until the process dies on its own:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># stop.sh</span>
+<span class="c">#!/bin/bash</span>
+<span class="nb">echo</span> <span class="s2">"stop"</span> <span class="o">&gt;&gt;</span> run/stdin-fifo
+<span class="k">while </span><span class="nb">kill</span> <span class="nt">-0</span> “<span class="k">${</span><span class="nv">MAINPID</span><span class="k">}</span>” 2&gt; /dev/null<span class="p">;</span> <span class="k">do
+    </span><span class="nb">sleep </span>1s
+<span class="k">done</span>
+</code></pre></div></div>
+
+<h2 id="shenanigans">Shenanigans</h2>
+
+<p>I’ve accomplished everything I wanted, and now I’m getting cocky and want more. The server is a bit buggy and needs to be restarted every once in a while for certain things to work. I don’t play as frequently as my roommate, so having to field requests to restart the server is a bit annoying, but I don’t trust them not to cheat if I gave them op.</p>
+
+<p>As it turns out, there are few tools more useful than a Wifi-enabled Raspberry Pi with a big red button on it. With SSH access to the server, it can just restart the server any time the button is pushed. I threw it all in the <a href="https://twitter.com/eritbh/status/1339209799062446081">first project case I could find</a> and mounted it outside my roommate’s door, so they’ve always got easy access to it.</p>
+
+<p>There’s still a lot I could improve about this setup. It’d be neat to make a web panel that can show me logs and run console commands without me having to SSH into anything; I’m sure there’s other software out there that can do stuff like this, but I haven’t shopped around much. In any case, this experience has been an entertaining way to learn a bit more about managing services on Linux servers.</p>]]></content><author><name>eritbh</name></author><summary type="html"><![CDATA[A couple months ago, a friend of mine decided that we should play some modded Minecraft together. This meant we needed a private server to play on, and neither of us really felt like paying for one, so I launched into a quest for the perfect self-hosted Minecraft server solution without knowing anything about how this is actually meant to be handled.]]></summary></entry></feed>

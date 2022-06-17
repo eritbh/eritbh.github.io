@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Managing SSH Keys with 1Password</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="Managing SSH Keys with 1Password &middot; Hi I'm Erin">
+<meta property="og:description" content="I have a problem: I can’t maintain an OS instance for very long. On my laptop, I’ll get frustrated with either macOS or Ubuntu and swap between the two a..."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2021/01/01/storing-ssh-keys-in-1password/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-01-01 00:00:00 +0000">
+<meta property="article:modified_time" content="2021-01-01 00:00:00 +0000">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">Managing SSH Keys with 1Password</h1><span class="post-meta__date">
+			<time datetime="2021-01-01 00:00:00 +0000">1 January 2021</time>
+			</span></header>
+
+	<p>I have a problem: I can’t maintain an OS instance for very long. On my laptop, I’ll get frustrated with either macOS or Ubuntu and swap between the two a couple times a year, and on my Windows desktop, all my code projects are cloned to WSL, which I manage to corrupt surprisingly often. When I install a new OS, I often forget to take things like SSH keys with me, which means that I end up leaving password authentication enabled on all my servers to avoid locking myself out on the regular.</p>
+
+<p>A couple days ago I decided I wanted to solve this problem. I’ve been a 1Password customer for a couple months now, and it’s been an amazing experience using its integrations for filling passwords and 2-factor authentication tokens across my devices. What if I could just store my SSH keys in there too? Is there an integration for that? Well, not quite—but there <em>is</em> <a href="https://support.1password.com/command-line-getting-started">a CLI</a>.</p>
+
+<p>Armed with the power of shell scripting, I set out to create an integration that would let me manage my SSH keys from the terminal. The idea is to create an SSH key pair for each server I need to connect to, and have the public and private keys stored only in 1Password. Then, I want these keys to be fetched automatically when I log into my computer and added to the SSH agent without the keys being stored on disk.</p>
+
+<p>1Password’s API seems to be mostly JSON-based, so this is all achievable with <a href="https://twitter.com/eritbh/status/1344731396879822848?s=20">a bit of <code class="language-plaintext highlighter-rouge">jq</code> witchcraft</a>. The final result is two scripts: <code class="language-plaintext highlighter-rouge">op-create-identity</code>, which creates key pairs, saves them to my vault, and adds them to servers, and <code class="language-plaintext highlighter-rouge">op-add-identities</code>, which pulls all key pairs from the vault and adds them to the SSH agent. I just dropped these scripts, along with the <code class="language-plaintext highlighter-rouge">op</code> binary, into <code class="language-plaintext highlighter-rouge">~/.local/bin</code> for easy access. You can check the code I came up with in <a href="https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c">this Gist</a>.</p>
+
+<p>The process of fetching keys needs to be interactive since you need to type your vault password, so getting it to happen when you first log in is a bit tricky. My first thought was to drop some conditional code in my shell profile that would run it when I open a terminal if it hadn’t been run yet, but I haven’t worked out all the details for something like that yet. For now, since I’m using Ubuntu on my laptop right now, I just created a new startup application that runs <code class="language-plaintext highlighter-rouge">gnome-terminal -e op-add-identities</code> when I log in. This approach isn’t perfect, and won’t work for me with my WSL install since there’s no “Startup Applications” GUI and no <code class="language-plaintext highlighter-rouge">gnome-terminal</code>, but it’ll be good enough for now. In the future, I’ll probably revise the script to work how I originally intended.</p>
+
+<p>Hopefully this will be useful for anyone looking to set up something similar—I couldn’t find many resources about this sort of thing when I was looking, just a couple old Reddit threads and 1Password forum posts that didn’t seem to include any complete solutions. I’ll update this post and the Gist if I ever get around to making the improvements I mentioned.</p>
+
+<script src="https://gist.github.com/5db73c1ddf9c27c425e7f4bd1f054c1c.js"></script>
+
+
+</main><footer><p>
+		<i>Last modified <time datetime="2021-01-01 00:00:00 +0000">1 January 2021</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>

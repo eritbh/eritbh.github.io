@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>WebDAV File Uploader in ShareX</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="WebDAV File Uploader in ShareX &middot; Hi I'm Erin">
+<meta property="og:description" content="Fastmail dropped support for FTP file uploads, so I updated my ShareX workflow to use WebDAV instead."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2022/03/05/sharex-webdav-upload/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-03-05 00:00:00 +0000">
+<meta property="article:modified_time" content="2022-03-05 00:00:00 +0000">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">WebDAV File Uploader in ShareX</h1><span class="post-meta__date">
+			<time datetime="2022-03-05 00:00:00 +0000">5 March 2022</time>
+			</span></header>
+
+	<p>Fastmail, my email provider, also offers file storage and simple public hosting of uploaded files. Until recently, it also allowed you to interface with your files via FTP. With these two things, it was trivial to set up ShareX, my Windows screenshot utility of choice, to automatically upload my screenshots to my custom domain for use in chat rooms and the like. But with the sunset of the Fastmail FTP interface, my upload settings stopped working. Fastmail still maintains a WebDAV interface, so I migrated my uploader to use that instead. Here’s what I learned.</p>
+
+<p>WebDAV is actually super neat - it basically lets you send normal HTTP calls to interact with and modify files on the remote server. <a href="https://stackoverflow.com/a/1205115">Stackoverflow illustrates</a> that uploading a file with WebDAV is as easy as can be on the command line:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl -T file https://my.server/path/to/file
+</code></pre></div></div>
+
+<p>ShareX lets you set up custom uploaders that hit HTTP routes, so this should be easy. I couldn’t find any particular example of a generic WebDAV custom uploader, but I figured it out. You can use <code class="language-plaintext highlighter-rouge">https://my.server/path/to/$filename$</code> as the request URL, and ShareX will fill in the filename for you. Then, <code class="language-plaintext highlighter-rouge">curl -T</code> against an HTTP/S server just means to use <code class="language-plaintext highlighter-rouge">PUT</code> and pass the file as the request body, which we can accomplish by setting our ShareX uploader’s request method to “PUT” and setting the body upload option to “Binary”.</p>
+
+<p>Talking with Fastmail’s servers also requires user/password authentication, typically using an application-specific password instead of your actual account password. You can use <code class="language-plaintext highlighter-rouge">curl --user user:pass</code> to send authentication on the command line; internally, this base64 encodes the <code class="language-plaintext highlighter-rouge">user:pass</code> string and sets the <code class="language-plaintext highlighter-rouge">Authorization</code> header to <code class="language-plaintext highlighter-rouge">Basic &lt;that&gt;</code>. <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#basic_authentication_scheme">MDN describes this in more detail</a>. Fortunately, ShareX also has a helper for base64 encoding things, so we can set <code class="language-plaintext highlighter-rouge">Authorization: Basic $base64:USER:PASS$</code> and call it a day. If your WebDAV server requires a different authentication scheme, you’ll have to change the value of that header accordingly.</p>
+
+<p>With Fastmail, I host my screenshots on a custom domain out of a specific folder in my file storage. ShareX has the ability to copy the uploaded image’s public URL after it’s uploaded, and to support that we just need to tell it where to look after upload. In my case it’s pretty simple: images get uploaded to my <code class="language-plaintext highlighter-rouge">Screenshots</code> folder and show up at the top of <code class="language-plaintext highlighter-rouge">https://i.eritbh.me</code>, so I set up the ShareX uploader’s “URL” setting as <code class="language-plaintext highlighter-rouge">https://i.eritbh.me/$filename$</code>. You may need something different depending on where your uploaded files are publically available.</p>
+
+<p>The full uploader template <a href="https://archive.eritbh.me/WebDAVUploader.sxcu">can be downloaded here</a>, and it looks like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "Version": "13.7.0",
+    "Name": "WebDAV File Uploader",
+    "DestinationType": "None",
+    "RequestMethod": "PUT",
+    "RequestURL": "https://your.server/path/to/$filename$",
+    "Headers": {
+        "Authorization": "Basic $base64:USER:PASS$"
+    },
+    "Body": "Binary",
+    "URL": "https://your.public.server/path/to/$filename$"
+}
+</code></pre></div></div>
+
+<p>Entering stuff manually in the ShareX custom uploader editor, it’ll look like this:</p>
+
+<p><img src="https://i.eritbh.me/GNqZqVkgCZd57.png" alt="Screenshot of ShareX custom uploader settings as specified above" /></p>
+
+<p>Hopefully this helps if, like me, you’re googling for “WebDAV ShareX uploader” and not finding any results. It’s pretty simple stuff in the end.</p>
+
+</main><footer><p>
+		<i>Last modified <time datetime="2022-03-05 00:00:00 +0000">5 March 2022</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>

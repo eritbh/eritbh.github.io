@@ -1,0 +1,442 @@
+@charset "utf-8";
+
+:root {
+	/* value scales from 0 to 1rem at page sizes 52rem to 64rem */
+	--expanding-rem: clamp(0rem, (100vw - 52rem) / 12, 1rem);
+}
+
+/* base colors */
+:root {
+	--dark: #202020;
+	--light: #EFE8E4;
+}
+
+/* color assignment depending on current theme */
+html {
+	--foreground: var(--dark);
+	--background: var(--light);
+}
+html[data-theme="dark"] {
+	--foreground: var(--light);
+	--background: var(--dark);
+}
+@media (prefers-color-scheme: dark) {
+	:root {
+		--foreground: var(--light);
+		--background: var(--dark);
+	}
+	html[data-theme="light"] {
+		--foreground: var(--dark);
+		--background: var(--light);
+	}
+}
+
+/* Base styles */
+
+html {
+	max-width: 64rem; /* 50 + 2 + 12 */
+	background: #EFE8E4; /* fallback for old shit */
+	background: var(--background);
+	font-family: "Open Sans", sans-serif;
+}
+
+body {
+	max-width: 50rem;
+	margin: 0 auto;
+	padding: 1rem;
+	padding: calc(2 * var(--expanding-rem) + 1rem) 1rem;
+	color: #202020; /* fallback for old shit */
+	color: var(--foreground);
+}
+
+a {
+	color: inherit;
+}
+
+p,
+li {
+	line-height: 1.5;
+}
+
+img {
+	display: block;
+	max-width: 100%;
+}
+
+/* Page header */
+
+.site-header {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.site-header__title {
+	margin: 0;
+	margin-inline-start: calc(-6 * var(--expanding-rem) - 1rem);
+	margin-inline-end: 1rem;
+	padding: 0;
+	padding-inline-start: calc(6 * var(--expanding-rem) + 1rem);
+	padding-inline-end: 1rem;
+	line-height: 3rem;
+	background: var(--foreground);
+	color: var(--background);
+	font-size: 1.75rem;
+	font-weight: 800;
+}
+
+/* on the homepage we want it beeg since there's no other title */
+.site-header--big .site-header__title {
+	font-size: 3rem;
+	line-height: 5rem;
+}
+
+/*
+ * When the site title has a link, we make the font size of the heading itself
+ * much larger, then set the font size back down to normal in the link. Then, we
+ * use :hover on the heading to add the underline, making it more pronounced.
+ */
+.site-header--has-link .site-header__title {
+	font-size: 4rem;
+	padding: 0;
+}
+.site-header--has-link .site-header__title:hover {
+	text-decoration: underline;
+}
+.site-header--has-link a {
+	display: block;
+	padding: 0;
+	padding-inline-start: calc(6 * var(--expanding-rem) + 1rem);
+	padding-inline-end: 1rem;
+	text-decoration: none;
+	font-size: 1.75rem;
+}
+
+/* these two never actually get used together, but maybe they will later */
+.site-header--big.site-header--has-link a {
+	font-size: 3rem;
+}
+
+/* Main page markdown content */
+
+main {
+	margin: 1rem 0 3rem;
+	margin: calc(2 * var(--expanding-rem) + 1rem) 0 calc(3 * var(--expanding-rem) + 1.5rem)
+}
+
+main > :first-child {
+	margin-top: 0;
+}
+
+main h2,
+main h3,
+main h4,
+main h5,
+main h6,
+main p,
+main hr,
+main blockquote,
+main pre,
+main .content-block {
+	margin: 1em 0;
+}
+main h1 {
+	font-size: 2.5rem;
+	font-size: calc(0.5 * var(--expanding-rem) + 2.5rem);
+	font-weight: 800;
+	margin: 1rem 0;
+	margin: calc((1em - 2.5rem) * 4 + 1rem) 0;
+}
+main h2 {
+	font-size: 2rem;
+	font-weight: 800;
+}
+main h3 {
+	font-size: 1.5em;
+	font-weight: 800;
+}
+main h4 {
+	font-size: 1.25em;
+	font-weight: bold;
+}
+main h5 {
+	font-size: 1em;
+	font-weight: normal;
+	text-decoration: underline;
+}
+main h6 {
+	font-size: 1em;
+	font-weight: normal;
+	font-style: italic;
+}
+
+main code {
+	background: rgb(127 127 127 / 20%);
+	padding: 0.125rem 0.25rem;
+	font-family: "JetBrains Mono", monospace;
+	font-size: 14px;
+}
+
+main pre {
+	background: rgb(127 127 127 / 20%);
+	padding: 1em 1rem;
+	font-size: min(1rem, (100vw - 20rem) / 360 * 3 + 0.5rem);
+	overflow: auto;
+	line-height: 1.2;
+}
+main pre code {
+	background: unset;
+	padding: 0;
+	font-size: inherit;
+}
+main > pre,
+main > div pre {
+	margin-inline-start: -1rem;
+	margin-inline-end: -1rem;
+}
+main blockquote {
+	padding: 1em 0;
+	padding-inline-start: 1.5em;
+	position: relative;
+}
+main blockquote > :first-child {
+	margin-top: 0;
+}
+main blockquote > :last-child {
+	margin-bottom: 0;
+}
+main blockquote::before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	width: 0.125rem;
+	background: var(--foreground);
+	opacity: 15%;
+}
+[dir=rtl] main blockquote::before {
+	left: initial;
+	right: 0;
+}
+
+main figure {
+	margin: 1rem 0;
+	margin: calc(2 * var(--expanding-rem) + 1rem) 0;
+}
+main figure img {
+	display: block;
+	border: 1em solid #FFF;
+	margin-inline: -1em;
+}
+main figcaption {
+	text-align: center;
+	font-style: italic;
+	margin-block: 2rem;
+}
+
+main hr, main::after {
+	border: 0;
+	border-top: 0.125rem solid var(--foreground);
+	box-shadow: -7rem 0 var(--foreground);
+	margin: 2rem -1rem;
+}
+main::after {
+	margin: calc(3 * var(--expanding-rem) + 1.5rem) -1rem;
+}
+[dir=rtl] main hr,
+[dir=rtl] main::after {
+	box-shadow: 7rem 0 var(--foreground);
+}
+main::after {
+	content: "";
+	display: block;
+}
+
+/*
+ * H2s are the highest-level heading used repeatedly throughout articles, so
+ * they get used as section breaks and have dividers attached
+ */
+main > h2 {
+	position: relative;
+	display: inline-block;
+	border-bottom: 0.125rem solid var(--foreground);
+	padding-bottom: calc(0.25 * var(--expanding-rem) + 0.25rem);
+}
+main > h2::after {
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: -0.125rem;
+	right: -1rem;
+	width: 100vw;
+	border-bottom: 0.125rem solid var(--foreground);
+}
+[dir=rtl] main > h2::after {
+	right: initial;
+	left: -1rem;
+}
+
+/* Footer content */
+
+footer {
+	margin-bottom: 4rem;
+	margin-bottom: calc(3 * var(--expanding-rem) + 4rem);
+}
+
+nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin: 0 -1rem;
+}
+
+nav ul {
+	list-style: none;
+	display: flex;
+	/*
+	 * some crazy shit to support browsers that don't have margin-inline
+	 * and more crazy shit to support browsers without calc() / var()
+	 */
+	margin: 0 0.5rem 0 1rem;
+	margin-block: 0;
+	margin-inline: 1rem 0.5rem;
+	margin-inline-end: calc(1 - (0.5 * var(--expanding-rem) + 0.5rem));
+	padding: 0;
+}
+nav li {
+	margin: 0 0.5rem 0 0;
+	margin-block: 0;
+	margin-inline: 0 0.5rem;
+	margin-inline-end: calc(0.5 * var(--expanding-rem) + 0.5rem);
+}
+nav li + li::before {
+	content: "·";
+	margin: inherit;
+}
+nav ul a {
+	/* Give footer links bigger hitboxes */
+	display: inline-block;
+	margin: -0.75rem -0.5rem;
+	padding: 0.75rem 0.5rem;
+}
+
+/* Heading anchors */
+
+.heading-link {
+	position: absolute;
+}
+:not(:hover) > .heading-link {
+	opacity: 0;
+}
+.heading-link::after {
+	position: absolute;
+	right: 0;
+	padding: 0 1rem;
+	content: "§";
+}
+[dir=rtl] .heading-link::after {
+	right: initial;
+	left: 0;
+}
+
+/* Post list */
+
+.posts-list {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Post information display - for posts list and for article headers */
+
+.post-meta {
+	display: flex;
+	flex-direction: column;
+	margin: 0 0 1rem;
+	margin: 0 0 calc(2 * var(--expanding-rem) + 1rem);
+}
+.post-meta:last-child {
+	margin-bottom: 0.5rem;
+}
+.post-meta__title {
+	/* font styles rely on heading styles defined above in <main> */
+	margin: 0;
+}
+.post-meta__title a {
+	text-decoration: none;
+}
+.post-meta__title a:hover {
+	text-decoration: underline;
+}
+.post-meta__date {
+	font-size: 1.5em;
+	order: -1;
+	margin-bottom: 0.25rem;
+}
+.post-meta__excerpt {
+	margin: 0.5rem 0 0;
+	margin: calc(0.5 * var(--expanding-rem) + 0.5rem) 0 0;
+}
+
+/* Photos list */
+main .photos-list {
+	display: flex;
+	flex-wrap: wrap;
+	margin-left: -0.5em;
+	margin-right: -0.5em;
+}
+.photos-list article {
+	box-sizing: border-box;
+	flex: 1 1 33%;
+	padding: 0 0.5em 1em;
+}
+@media (max-width: 600px) {
+	.photos-list article {
+		flex-basis: 50%;
+	}
+}
+.photos-list a {
+	display: block;
+	padding: 0.5em;
+	padding: calc(0.5em + 0.5 * var(--expanding-rem));
+	background: #FFF;
+}
+.photos-list img {
+	aspect-ratio: 1;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+}
+
+/* Text buttons */
+
+.button {
+	display: inline-block;
+	padding: 0.25rem 0.5rem;
+	padding: calc(0.5 * var(--expanding-rem) + 0.25rem) calc(var(--expanding-rem) + 0.5rem);
+	background: var(--foreground);
+	color: var(--background);
+	font-weight: 800;
+	text-decoration: none;
+	font-size: 1.125em;
+}
+
+/* Paragraphs that just contain images */
+
+.images {
+	display: flex;
+	flex-wrap: wrap;
+	margin: -0.5rem;
+}
+
+.images > * {
+	display: block;
+	flex: 0 0 calc(33% - 1rem);
+	margin: 0.5rem;
+}
+
+@media screen and (max-width: 800px) {
+	.images > * {
+		flex-basis: calc(50% - 1rem);
+	}
+}

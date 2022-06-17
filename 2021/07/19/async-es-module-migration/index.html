@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Moving Old Asynchronous Systems to ES6 Modules</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="Moving Old Asynchronous Systems to ES6 Modules &middot; Hi I'm Erin">
+<meta property="og:description" content="I think ES modules are an awesome addition to Javascript. They allow static analysis across files, allowing for things like tree shaking and making VS Code’s Intellisense feature even more..."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2021/07/19/async-es-module-migration/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2021-07-19 00:00:00 +0000">
+<meta property="article:modified_time" content="2021-07-19 00:00:00 +0000">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">Moving Old Asynchronous Systems to ES6 Modules</h1><span class="post-meta__date">
+			<time datetime="2021-07-19 00:00:00 +0000">19 July 2021</time>
+			</span></header>
+
+	<p>I think ES modules are an awesome addition to Javascript. They allow static analysis across files, allowing for things like tree shaking and making VS Code’s Intellisense feature even more useful for large projects. However, I’ve been working to bring these advantages to an older codebase, and it presented some challenges that I haven’t had in other projects; I thought I’d document my findings here.</p>
+
+<p>This project is a browser extension that’s built without any bundling or dependency management, because it doesn’t really have any dependencies. I really like writing native Javascript without transpiling or bundling, but in order to make a maintainable system before modules were available in all browsers, the codebase relied heavily on adding properties to the global object that are referenced from other files. On the surface, converting this structure to a module-based system seems easy—identify all the global properties added by various files, convert them to exports, import the file wherever those values are needed, and call it a day. However, modules do have one major difference from normal objects that prevents this from working: Module exports can’t be reassigned asynchronously. Once the module is executed synchronously, from top to bottom, any other reassignments from within promises, callbacks, or timeouts won’t be seen by any other file importing it.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// a.js</span>
+<span class="kd">let</span> <span class="nx">foo</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">foo</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span> <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="k">export</span> <span class="p">{</span><span class="nx">foo</span><span class="p">};</span>
+
+<span class="c1">// b.js</span>
+<span class="k">import</span> <span class="p">{</span><span class="nx">foo</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./a.js</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span> <span class="p">},</span> <span class="mi">200</span><span class="p">);</span>
+<span class="c1">// Output: 1 (not 2!)</span>
+</code></pre></div></div>
+
+<p>The code I’m working on doesn’t just assign constants and functions to the global object, it also stores application state there, and references it a <em>lot</em>. On startup, for example, the extension checks if you’re on a specific website, and if you are, tries to detect your account’s username. This is done asynchronously, so an exported value can’t be used here, but I still want to have a statically exported way to obtain that value from elsewhere, without having to change up consumer code too much.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// util.js</span>
+<span class="c1">// Wait a second to let the page fully load</span>
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="c1">// Store the user's username </span>
+	<span class="nb">window</span><span class="p">.</span><span class="nx">username</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">user-menu</span><span class="dl">'</span><span class="p">).</span><span class="nx">textContent</span><span class="p">;</span>
+<span class="p">},</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1">// contentScript.js</span>
+<span class="c1">// When the submit button is clicked, handle it specially</span>
+<span class="kd">let</span> <span class="nx">submitButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type=submit]</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">submitButton</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">username</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The obvious solution would be to use promises, but a typical async function won’t quite cut it - you don’t want to wait a full second <em>every time</em> a different part of the content script needs access to the user’s username! It’s a value that you only need to compute once, when the page loads, and it should be immediately available after that every time. How can we accomplish this?</p>
+
+<p>Well, it turns out you don’t need a function at all - this is a good use case for constructing and exporting a promise directly. Here’s the module-oriented solution I came up with:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// util.js</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">username</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="c1">// Wait a second to let the page fully load</span>
+	<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+		<span class="c1">// Resolve with the user's username</span>
+		<span class="kd">let</span> <span class="nx">username</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">user-menu</span><span class="dl">'</span><span class="p">).</span><span class="nx">textContent</span><span class="p">;</span>
+		<span class="nx">resolve</span><span class="p">(</span><span class="nx">username</span><span class="p">);</span>
+	<span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// contentScript.js</span>
+<span class="k">import</span> <span class="p">{</span><span class="nx">username</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./util.js</span><span class="dl">'</span><span class="p">;</span>
+<span class="c1">// When the submit button is clicked, handle it specially</span>
+<span class="kd">let</span> <span class="nx">submitButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">input[type=submit]</span><span class="dl">'</span><span class="p">);</span>
+<span class="nx">submitButton</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="k">async</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+	<span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+	<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">await</span> <span class="nx">username</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>See how that works? A promise is the same object even when it resolves, so the same object will be imported every time someone requests the username, and if it’s already been retrieved from the page, there’s no wait necessary - the promise caches its resolution value for us, and we can <code class="language-plaintext highlighter-rouge">await</code> it at any time to retrieve it without a perceptible delay.</p>
+
+<p>The downside of this method is that for a large project, you may have a lot of refactoring to do in order to incorporate promises in what once were assumed to be “synchronous” bits of code. However, this is actually an advantage of using promises for tasks like this—they force you to acknowledge that code using them is not guaranteed to have a return value immediately. It can cause a lot of churn, and I really did try to find a “synchronous” workaround that would mean less manual conversion, but eventually I realized that the spec prevents you from modifying exports in order to prevent the exact same class of asynchronous bugs that asynchronous structures like callbacks and promises are designed to prevent. In the end, ES6 modules ended up being the feature that pushed me to modernize a large chunk of our codebase, and the project will be better for it.</p>
+
+</main><footer><p>
+		<i>Last modified <time datetime="2021-07-19 00:00:00 +0000">19 July 2021</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Using Node.js Process Warnings</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="Using Node.js Process Warnings &middot; Hi I'm Erin">
+<meta property="og:description" content="Process warnings in Node are a very useful tool. They provide a standard interface for exposing warning information to developers, allowing library maintainers to communicate deprecations and possible issues to..."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2022/01/11/using-node-process-warnings/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-01-11 00:00:00 +0000">
+<meta property="article:modified_time" content="2022-01-11 00:00:00 +0000">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">Using Node.js Process Warnings</h1><span class="post-meta__date">
+			<time datetime="2022-01-11 00:00:00 +0000">11 January 2022</time>
+			</span></header>
+
+	<p><a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_event_warning">Process warnings</a> in Node are a very useful tool. They provide a standard interface for exposing warning information to developers, allowing library maintainers to communicate deprecations and possible issues to consumers while providing controls for application developers to deal with them. However, the documentation for them is surprisingly loose, and there are few documented best practictes for their use in libraries as far as I’ve seen. This article will be an introduction to process warnings and a set of guidelines for both package maintainers and application developers to follow when using process warnings.</p>
+
+<h2 id="why-use-process-warnings">Why use process warnings?</h2>
+
+<p>Process warnings exist to surface information to developers that indicate the possibility of undesired behavior occuring in the future. They could indicate runtime issues, like a misconfigured module that may not behave as expected, or a code quality issue, like uses of a deprecated or obsoleted API. Importantly, process warnings should be warnings that can be fixed by the developer—they shouldn’t be used to signal any old “warning” condition in your code, only issues that require developer attention to fix.</p>
+
+<h2 id="anatomy-of-a-warning">Anatomy of a warning</h2>
+
+<p>Process warnings are emitted via <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_process_emitwarning_warning_type_code_ctor"><code class="language-plaintext highlighter-rouge">process.emitWarning()</code></a>. This function has two forms, but both allow the same basic options:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">warning</code>, the warning message</li>
+  <li><code class="language-plaintext highlighter-rouge">type</code>, a string describing the type of warning (which defaults to just <code class="language-plaintext highlighter-rouge">'Warning'</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">code</code>, an optional unique identifier for the cause of the error</li>
+</ul>
+
+<p>By default, process warnings are displayed in the console output of the application and look like this:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ node -e 'process.emitWarning("Warning message", "WarningType", "code")'
+(node:49466) [code] WarningType: Warning message
+</code></pre></div></div>
+
+<p>The first time a process warning is emitted, Node may inform you of one other property of process warnings: like thrown exceptions and <code class="language-plaintext highlighter-rouge">Error</code> objects, they are also capable of presenting tracebacks.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(Use `node --trace-warnings ...` to show where the warning was created)
+</code></pre></div></div>
+
+<p>Warnings also have an optional <code class="language-plaintext highlighter-rouge">detail</code> option, which is simply a string printed on a separate line after the warning message, as well as a <code class="language-plaintext highlighter-rouge">ctor</code> option, which takes a function that can be used to manipulate how the stack trace is displayed.</p>
+
+<h2 id="customizing-warning-display">Customizing warning display</h2>
+
+<p>Node accepts several command-line flags that can change the display of process warnings emitted in an application, such as the <code class="language-plaintext highlighter-rouge">--trace-warnings</code> flag mentioned before. These flags are documented in various places in <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_event_warning">the <code class="language-plaintext highlighter-rouge">warning</code> event documentation</a> and <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#process_process_emitwarning_warning_type_code_ctor">the <code class="language-plaintext highlighter-rouge">emitWarning</code> documentation</a>, and are summarized here.</p>
+
+<ul>
+  <li>Use <code class="language-plaintext highlighter-rouge">--trace-warnings</code> to print a stack trace alongside warnings.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--no-warnings</code> to skip printing warnings to stdout.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--trace-deprecation</code> to print a stack trace alongside deprecation warnings.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--no-deprecation</code> to skip printing deprecation warnings to stdout.</li>
+  <li>Use <code class="language-plaintext highlighter-rouge">--throw-deprecation</code> to treat deprecation warnings as thrown exceptions originating from the relevant <code class="language-plaintext highlighter-rouge">process.emitWarning</code> call.</li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">--*-deprecation</code> flags apply only to deprecation warnings—warnings with their <code class="language-plaintext highlighter-rouge">type</code> set to exactly <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>. This is one of several warning types used by Node itself; however, it is the only warning type with its own specific command-line flags.</p>
+
+<p>Note that the <code class="language-plaintext highlighter-rouge">--no-warnings</code> and <code class="language-plaintext highlighter-rouge">--no-deprecation</code> flags prevent warnings from being logged to the console, but do not prevent warnings from being emitted to the <code class="language-plaintext highlighter-rouge">warning</code> event. This is useful if you want to log warnings in a custom format or to an external service rather than sending them to the console.</p>
+
+<h2 id="warning-types-and-origins">Warning types and origins</h2>
+
+<p>There is a <a href="https://nodejs.org/docs/latest-v16.x/api/process.html#nodejs-warning-names">section of documentation discussing warning names</a> which gives a list of some commonly-used warning types that can be emitted by Node itself, including <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>. This section states that additional undocumented warning types may be emitted by Node; there is no exhaustive list of “official” warning types used by Node. There is also no guideline that the documented warning types can be used only by Node. This exposes a limitation of the process warning system: there is no standard way to identify the originator of a warning, whether it was the Node runtime, a specific library or package, or an application’s own code. Using <code class="language-plaintext highlighter-rouge">--trace-warnings</code> and referencing the traceback can usually help fill this gap, though it can fall short if the original structure of the application has been lost, for example through a bundling or code optimization process prior to runtime.</p>
+
+<p>Some of the documented warning types have very little use outside Node itself; most libraries likely have no reason to ever emit a <code class="language-plaintext highlighter-rouge">TimeoutOverflowWarning</code> unless they re-define the <code class="language-plaintext highlighter-rouge">setTimeout</code> global. Other types, like <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>, describe more general categories of behavior and are almost certainly applicable to libraries as well.</p>
+
+<p><code class="language-plaintext highlighter-rouge">DeprecationWarning</code> is a somewhat special warning type. In addition to the <code class="language-plaintext highlighter-rouge">--*-deprecation</code> flags discussed above that specifically modify the treatment of this warning type, the documentation about warning names also states that the <code class="language-plaintext highlighter-rouge">code</code> property of Node-emitted <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>s is used to identify the unique deprecation that caused the warning to be emitted:</p>
+
+<blockquote>
+  <p><code class="language-plaintext highlighter-rouge">'DeprecationWarning'</code> - Indicates use of a deprecated Node.js API or feature. Such warnings must include a ‘code’ property identifying the <a href="https://nodejs.org/docs/latest-v16.x/api/deprecations.html">deprecation code</a>. <sup><a href="https://nodejs.org/docs/latest-v16.x/api/process.html#nodejs-warning-names">[source]</a></sup></p>
+</blockquote>
+
+<h2 id="recommendations-for-package-maintainers">Recommendations for package maintainers</h2>
+
+<p>Keep warning messages relatively short; if a longer description or links to external resources/project documentation is required, use the <code class="language-plaintext highlighter-rouge">detail</code> option in addition to a shorter description in the main warning message.</p>
+
+<p>If your library has a complicated structure that may be confusing to consumers, consider using the <code class="language-plaintext highlighter-rouge">ctor</code> option to limit the stack trace of the emitted warning to only display lines that will be relevant to the consumer.</p>
+
+<p>If you deprecate any part of your package’s public API, use the <code class="language-plaintext highlighter-rouge">DeprecationWarning</code> warning type to surface this information to developers and give them control over how that information is handled. If possible, establish consistent deprecation codes for individual API changes. Warning <code class="language-plaintext highlighter-rouge">code</code>s for deprecation warnings should ideally include the name of your package or some other recognizeable identifier so that a developer reading the logs can know to look at your documentation when resolving the error. If possible, include a migration path away from the deprecated API in the warning message.</p>
+
+<p>For other types of warnings, avoid using warning types that are documented and used by Node. Prefer warning types in <code class="language-plaintext highlighter-rouge">PascalCase</code> that end with <code class="language-plaintext highlighter-rouge">Warning</code>. Be specific; descriptive warning types and messages are one of the few ways a developer can quickly identify what part of their code is causing the warning, especially when working with multiple libraries. The <code class="language-plaintext highlighter-rouge">code</code> option is not limited to <code class="language-plaintext highlighter-rouge">DeprecationWarning</code>s; it may be useful to provide a code on all warnings to explicitly tie them to your library and provide a specific point of reference.</p>
+
+<p>Consider establishing documentation for your project that lets consumers find more information about individual warning codes. For example, if your library is hosted on Github, consider creating a Github issue or discussion for each warning that can be emitted and using its reference number as the code for that warning.</p>
+
+<h2 id="recommendations-for-package-consumers">Recommendations for package consumers</h2>
+
+<p>The command-line flags for managing warnings are your friends. Use them in development to help identify issues before your changes reach production. Consider making <code class="language-plaintext highlighter-rouge">--trace-warnings</code> and/or <code class="language-plaintext highlighter-rouge">--throw-deprecation</code> part of your normal testing runtime.</p>
+
+<p>In production, consider using the <code class="language-plaintext highlighter-rouge">--no-warnings</code> flag in combination with a <code class="language-plaintext highlighter-rouge">warning</code> event listener to report warnings to any external logging or analytics suite you may use.</p>
+
+<p>When listening to the <code class="language-plaintext highlighter-rouge">warning</code> event to filter out certain warnings or to act automatically on emitted warnings, compare <code class="language-plaintext highlighter-rouge">code</code>s when possible rather than just filtering warnings by <code class="language-plaintext highlighter-rouge">type</code>. This can help avoid accidentally swallowing errors with the same <code class="language-plaintext highlighter-rouge">type</code> emitted by other libraries.</p>
+
+<h2 id="conclusions">Conclusions</h2>
+
+<p>Process warnings are not without their limitations and challenges. The inconsistent definition of warning types and codes, combined with the lack of any reliable mechanism for identifying the originator of a warning short of parsing tracebacks, makes them of limited usefulness for certain types of warnings, particularly those that carry lots of additional metadata or which should primarily be handled by code rather than by people. However, they have their place as a mechanism to assist with troubleshootinng and to surface unwanted behavior and API changes to consumers. To that end, I hope this piece is useful for determining when and how to implement and interface with process warnings.</p>
+
+
+</main><footer><p>
+		<i>Last modified <time datetime="2022-01-11 00:00:00 +0000">11 January 2022</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>

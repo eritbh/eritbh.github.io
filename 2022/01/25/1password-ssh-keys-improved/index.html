@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>1Password and SSH Keys, Improved</title>
+
+<link rel="alternate" type="application/atom+xml" title="Hi I'm Erin" href="/feed.xml">
+
+<link rel="stylesheet" type="text/css"
+	href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,700;0,800;1,400;1,700&family=JetBrains+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" type="text/css" href="/css/normalize.8.0.1.css">
+<link rel="stylesheet" type="text/css" href="/css/main.css">
+<link rel="stylesheet" type="text/css" href="/css/theme-button.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-light.css">
+<link rel="stylesheet" type="text/css" href="/css/solarized-dark.css">
+<!-- <link rel="stylesheet" type="text/css" href="/css/ariake-dark.css"> -->
+
+<!-- included before content to avoid flashing -->
+<script src="/js/theme.js"></script>
+
+<!-- Social/embed info tags -->
+<meta property="og:title" content="1Password and SSH Keys, Improved &middot; Hi I'm Erin">
+<meta property="og:description" content="Releasing v1.0 of my key management suite, informed and improved by lessons learned from the original proof of concept."><meta property="twitter:card" content="summary">
+<meta property="og:image" content="https://github.com/pages/eritbh/assets/umbreon-2x.png">
+<meta property="og:image:alt" content="Shiny Umbreon doing a run"><meta property="og:url" content="https://github.com/pages/eritbh/2022/01/25/1password-ssh-keys-improved/"><meta property="og:type" content="article">
+<meta property="article:published_time" content="2022-01-25 00:00:00 +0000">
+<meta property="article:modified_time" content="2022-01-25 00:00:00 +0000">
+<meta property="article:author" content="eritbh"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#EFE8E4">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#202020">
+</head>
+
+<body>
+	<header class="site-header site-header--has-link">
+	<h2 class="site-header__title">
+		<a href="/">
+			Hi I'm Erin
+		</a>
+	</h2>
+</header>
+<main>
+	<header class="post-meta">
+		<h1 class="post-meta__title">1Password and SSH Keys, Improved</h1><span class="post-meta__date">
+			<time datetime="2022-01-25 00:00:00 +0000">25 January 2022</time>
+			</span></header>
+
+	<p>Last time I <a href="/2021/01/01/storing-ssh-keys-in-1password/">worked on a solution to my SSH key problem</a>, I wrote scripts to store all my SSH keys in my 1Password vault and load those keys into my SSH agent whenever I need them. To recap, I wrote two scripts: <code class="language-plaintext highlighter-rouge">op-create-identity</code>, which generated a new keypair and wrote it to a 1Password vault item, and <code class="language-plaintext highlighter-rouge">op-add-identities</code>, which searched for identity items in your vault and added all their keys to the <code class="language-plaintext highlighter-rouge">ssh-agent</code> automatically. However, I’ve recently run into a problem with this approach: if you have too many keys in your agent, logging into a server will try all those keys sequentially until it finds the one for that particular server. I’ve recently needed to add additional keys for new hosts I need to remote into, which means I’m loading enough keys into my agent that some servers will start disconnecting me for too many login attempts before the correct key is checked.</p>
+
+<p>To solve this problem, I needed to rework my utilities slightly. I needed to make sure each key was used only for its intended user and host, but I also wanted to avoid storing the keys on disk at any point (an advantage that attracted me to the <code class="language-plaintext highlighter-rouge">ssh-agent</code> approach in the first place). I knew that SSH config files could be used to set the keyfile used for authentication based on <code class="language-plaintext highlighter-rouge">Host</code> and <code class="language-plaintext highlighter-rouge">Match</code> directives, which seemed like a good place to start. However, <code class="language-plaintext highlighter-rouge">IdentityFile</code> directives can only be used to point at files, which means I also needed to use some sort of temporary in-memory filesystem to avoid persisting the keys across reboots.</p>
+
+<h2 id="changes-and-additions">Changes and additions</h2>
+
+<p>I’ve taken the opportunity to rename the scripts to something more permanent and add a few features to them as well. The new <code class="language-plaintext highlighter-rouge">op-ssh-fetch</code> script replaces <code class="language-plaintext highlighter-rouge">op-add-identities</code>, and instead of pulling all keys and throwing them through <code class="language-plaintext highlighter-rouge">ssh-add</code>, it writes each key to a folder in <code class="language-plaintext highlighter-rouge">/dev/shm</code> (or <code class="language-plaintext highlighter-rouge">/tmp</code> if <code class="language-plaintext highlighter-rouge">/dev/shm</code> doesn’t exist, though this can be customized). It then creates an SSH config file that points each host/user combination to the appropriate key, which I can include from my personal SSH config. Using <code class="language-plaintext highlighter-rouge">/dev/shm</code> means it can be guaranteed the keys will never be written to disk, though there is also a new <code class="language-plaintext highlighter-rouge">op-ssh-remove</code> script that can be used to nuke the storage folder manually.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ tree /dev/shm/op-ssh-utils
+/dev/shm/op-ssh-utils
+├── keys
+│   ├── 9n8gvb37hox9drhn8by742l98o
+│   └── 9n8gvb37hox9drhn8by742l98o.pub
+└── ssh_config
+
+$ cat /dev/shm/op-ssh-utils/ssh_config
+Match host 10.20.30.40 user erin
+  IdentityFile /dev/shm/op-ssh-utils/keys/9n8gvb37hox9drhn8by742l98o
+
+$ cat ~/.ssh/config
+Include /dev/shm/op-ssh-utils/ssh_config
+# ...
+</code></pre></div></div>
+
+<p>What’s more, <code class="language-plaintext highlighter-rouge">op-ssh-fetch</code> accepts the <code class="language-plaintext highlighter-rouge">-n</code> option to do nothing if keys have already been pulled, which can be used in combination with a shell alias to ensure keys are pulled the first time you run <code class="language-plaintext highlighter-rouge">ssh</code> after logging in. For example, I use the following in my <code class="language-plaintext highlighter-rouge">.bashrc</code>/<code class="language-plaintext highlighter-rouge">.zshrc</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PATH="~/.1password-ssh-utils/bin:$PATH"
+alias ssh="op-ssh-fetch -n &amp;&amp; ssh"
+</code></pre></div></div>
+
+<p>I’ve also slightly redone the way keys are stored in 1Password, storing username and host in separate fields and creating fields with certain internal identifiers so the script still works if a user renames the fields for some reason. This required me to do some manual migration of my items from the first proof-of-concept version, but I think this time I’ve settled on a layout that’s flexible enough to maintain going forward.</p>
+
+<p><a href="https://i.eritbh.me/unnw47w5ZJB1e.png"><img src="https://i.eritbh.me/unnw47w5ZJB1e.png" alt="Screenshot of the 1Password web interface, displaying a vault item titled &quot;10.20.30.40&quot; and subtitled &quot;erin.&quot; The entry has the following fields: host: 10.20.30.40; username: erin; password: concealed value; public key: the beginning of an RSA public key; private key: concealed value.&quot; " /></a></p>
+
+<p>The new <code class="language-plaintext highlighter-rouge">op-ssh-create</code> script replaces <code class="language-plaintext highlighter-rouge">op-create-identity</code>, and also adds some features like support for uploading an existing keypair rather than generating a new one, as well as making the <code class="language-plaintext highlighter-rouge">ssh-copy-id</code> and local registration steps optional in case you don’t need to re-add an existing key to a host but still want to upload it to 1Password.</p>
+
+<h2 id="release-and-future-plans">Release and future plans</h2>
+
+<p>I’m still working on the quality of my bash code, and there are several other features I want to add to this suite before I’ll be satisfied with it, but I’m pretty comfortable with the state of these tools and have made a 1.0 release for them <a href="https://github.com/eritbh/1password-ssh-utils">on Github</a>. If this sounds like something you’d be interested in using, please give it a try and let me know how it goes for you in <a href="https://github.com/eritbh/1password-ssh-utils/issues/new">a new issue</a> or <a href="https://twitter.com/eritbh/">on Twitter</a>! I’m always open to feedback and suggestions.</p>
+
+<p>In the future, I hope to move away from the hardcoded output dir to support multiple users on a single system (<a href="https://github.com/eritbh/1password-ssh-utils/issues/5">#5</a>), and I also want to explore more portable options for storing files in memory (<a href="https://github.com/eritbh/1password-ssh-utils/issues/6">#6</a>). There are also improvements I want to make to how SSH items are picked up from the vault to make the experience a bit simpler and more predictable when editing an item from other 1Password clients (<a href="https://github.com/eritbh/1password-ssh-utils/issues/3">#3</a>). I’m excited to continue working on this project.</p>
+
+
+</main><footer><p>
+		<i>Last modified <time datetime="2022-01-25 00:00:00 +0000">25 January 2022</time></i>
+	</p><nav>
+		<ul><li><a href="/">Home</a></li><li><a href="/posts/">Posts</a></li><li><a href="/erin/">Me</a></li><li><a href="/photos/">Photos</a></li><li><a href="/feed.xml">Feed</a></li>
+		</ul>
+		<ul><li><a href="https://tech.lgbt/@eritbh" rel="me">Mastodon</a></li><li><a href="https://twitter.com/eritbh" rel="me">Twitter</a></li><li><a href="https://github.com/eritbh" rel="me">GitHub</a></li><li><a href="https://ko-fi.com/eritbh" rel="me">Donate</a></li></ul>
+	</nav>
+</footer>
+
+
+	<!-- Only add the theme button to the page if JS is allowed -->
+	<script>document.write('<button class="theme-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+
+	<!-- Add links to heading anchors for easy sharing -->
+	<script src="/js/anchor.js"></script>
+
+	<!-- Do some extra RTL text handling if loaded in Google Translate -->
+	<script>if (window.location.hostname.endsWith('.translate.goog')) document.write('<script src="/js/translate.js"><\/script>');</script>
+</body>
+
+</html>
