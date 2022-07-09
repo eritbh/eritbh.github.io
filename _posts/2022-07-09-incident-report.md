@@ -1,6 +1,6 @@
 ---
-title: "Incident Analysis: Primary Systems Outage"
-excerpt: Post-mortem analysis of the system outage which impacted most primary host functionality for about two hours.
+title: "Primary System Outage: Incident Report"
+excerpt: Post-mortem analysis of the system outage which impacted most primary host functionality for about two hours on 9 July 2022.
 ---
 Today, our systems suffered an outage that affected most primary functions. We have determined that this disruption was caused by the contents of a Twitter post being loaded into one of our backend applications during emergency maintenance, at which point it was interpreted incorrectly by a degraded server and as a result triggered the shutdown of most non-essential systems. The outage lasted approximately two hours, during which time API consumers were unable to queue new jobs, interact with jobs in progress, or send messages over most communication layers.
 
