@@ -27,6 +27,19 @@ Gets rid of stupid crap from Fandom wikis, like the useless network navigation b
 	</div>
 </div>
 
+## Compact Modmail User Info
+
+Minimizes or removes the snoovatar in the user info sidebar of Reddit modmail.
+
+<a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/compact-modmail-user-info.css">Install</a>
+
+<div class="content-block">
+	<div class="images">
+		<a href="https://i.eritbh.me/brSuVkLigyyo3.png"><img src="https://i.eritbh.me/brSuVkLigyyo3.png"></a>
+		<a href="https://i.eritbh.me/6XZsP239pJdo4.png"><img src="https://i.eritbh.me/6XZsP239pJdo4.png"></a>
+	</div>
+</div>
+
 <script>
 	document.addEventListener('readystatechange', function () {
 		if (document.readyState != 'complete') {
