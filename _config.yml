@@ -39,6 +39,11 @@ defaults:
   values:
     layout: default
 - scope:
+    type: pages
+    path: misc
+  values:
+    layout: bare
+- scope:
     type: photos
   values:
     layout: photo
