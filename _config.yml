@@ -42,7 +42,7 @@ defaults:
     type: pages
     path: misc
   values:
-    layout: bare
+    layout: basic
 - scope:
     type: photos
   values:
