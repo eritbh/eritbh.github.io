@@ -12,6 +12,12 @@ Welcome to my site and blog and stuff! I post things sometimes. You can look at 
 
 ## Recent Posts
 
-{% include post_list.html num=3 %}
+{% include post_list.html num=5 %}
 
 <a class="button" href="/posts">All Posts</a>
+
+## Recent Photos
+
+{% include photos_list.html num=6 %}
+
+<a class="button" href="/photos">All Photos</a>
