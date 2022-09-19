@@ -62,3 +62,7 @@
 	transform: translate(-0.5rem,-0.5rem);
 	box-shadow: 0 1rem var(--foreground);
 }
+
+html:not([data-local-theme]) .theme-reset-button {
+	display: none;
+}

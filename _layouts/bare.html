@@ -9,7 +9,22 @@
 	{{ content }}
 
 	<!-- Only add the theme button to the page if JS is allowed -->
-	<script>document.write('<button class="theme-button theme-toggle-button" aria-label="Toggle theme" title="Toggle theme" onclick="toggleTheme()"></button>');</script>
+	<script>
+		document.write(`
+			<button
+				class="theme-button theme-toggle-button"
+				aria-label="Toggle theme"
+				title="Toggle theme"
+				onclick="toggleTheme()"
+			></button>
+			<button
+				class="theme-button theme-reset-button"
+				aria-label="Reset to browser/system theme"
+				title="Reset to browser/system theme"
+				onclick="resetTheme()"
+			></button>
+		`);
+	</script>
 
 	<!-- Add links to heading anchors for easy sharing -->
 	<script src="/js/anchor.js"></script>
