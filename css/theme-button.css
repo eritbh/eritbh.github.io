@@ -56,8 +56,8 @@
 }
 .theme-reset-button::after {
 	border: 0.5rem solid var(--background);
-	border-block-start-color: transparent;
-	border-inline-end-color: transparent;
+	border-top-color: transparent;
+	border-right-color: transparent;
 	position: absolute;
 	transform: translate(-0.5rem,-0.5rem);
 	box-shadow: 0 1rem var(--foreground);
