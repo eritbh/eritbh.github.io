@@ -19,3 +19,4 @@ If you like what I do, consider [donating to me on Ko-Fi](https://ko-fi.com/erit
 - [Reddit](https://reddit.com/user/eritbh)
 - [Twitter](https://twitter.com/eritbh)
 - [Email](mailto:hello@eritbh.me)
+- Discord: <code>Erin 💫#2272</code>
