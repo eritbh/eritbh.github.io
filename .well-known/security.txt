@@ -1,4 +1,4 @@
 Contact: mailto:security@eritbh.me
 Preferred-Languages: en
 Canonical: https://eritbh.me/.well-known/security.txt
-Expires: 2023-01-01T05:00:00.000Z
+Expires: 2023-06-01T05:00:00.000Z
