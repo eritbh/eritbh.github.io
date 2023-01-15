@@ -38,6 +38,7 @@ html {
 	background: #EFE8E4; /* fallback for old shit */
 	background: var(--background);
 	font-family: "Open Sans", sans-serif;
+	tab-size: 4;
 }
 
 body {
