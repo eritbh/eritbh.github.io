@@ -27,6 +27,12 @@ Gets rid of stupid crap from Fandom wikis, like the useless network navigation b
 	</div>
 </div>
 
+## Discord Custom Fonts
+
+Lets you set custom body and code fonts for Discord. Also undoes dumb `font-weight` shenanigans that Discord sets up on light mode if you're on a standard-density monitor (because most fonts are designed to be readable in black-on-white on normal displays, you incompetent assholes).
+
+<a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/discord-fonts.user.css">Install</a>
+
 ## Compact Modmail User Info
 
 Minimizes or removes the snoovatar in the user info sidebar of Reddit modmail.
