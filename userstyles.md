@@ -33,6 +33,12 @@ Lets you set custom body and code fonts for Discord. Also undoes dumb `font-weig
 
 <a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/discord-fonts.user.css">Install</a>
 
+## Pinafore UI tweaks
+
+Lets you set custom fonts, tweak the maximum width of the timeline, add backgrounds and word wrap to code display, and fixes non-wrapped code blocks with long lines being cut off and unscrollable horizontally.
+
+<a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/pinafore-customization.user.css">Install</a>
+
 ## Compact Modmail User Info
 
 Minimizes or removes the snoovatar in the user info sidebar of Reddit modmail.
