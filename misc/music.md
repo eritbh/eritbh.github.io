@@ -45,7 +45,7 @@ Heavy in creative samples that establish a good rhythm while building up to the 
 
 ### [Lena Raine - Aurora (on Oneknowing)](https://www.youtube.com/watch?v=YslPg5LPC58)
 
-Oneknowing is a really good, calming album. Not necessarily cozy, exactly, but it does get me in a certain mood. Good for quiet moments. It was between this and Light Rail to close out the list
+Oneknowing is a really good, calming album. Not necessarily cozy, exactly, but it does get me in a certain mood. Good for quiet moments. It was between this and Light Rail to close out the list.
 
 ### hi here's some other random shit at the end
 
