@@ -13,8 +13,6 @@ If you like what I do, consider [donating to me on Ko-Fi](https://ko-fi.com/erit
 <a name="socials"> I have a presence on several other platforms as well, usually under the handle "eritbh". Feel free to get in touch~
 
 - [GitHub](https://github.com/eritbh)
-- [Mastodon](https://tech.lgbt/@eritbh)
-- [Cohost](https://cohost.org/eritbh)
-- [Reddit](https://reddit.com/user/eritbh)
 - [Twitter](https://twitter.com/eritbh)
+- [Reddit](https://reddit.com/user/eritbh)
 - [Email](mailto:hello@eritbh.me)
