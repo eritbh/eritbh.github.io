@@ -1,7 +1,7 @@
 ---
 title: Me
 order: 5
-updated: 2022-04-30
+updated: 2023-05-20
 ---
 
 I'm a developer! Mostly a web developer. Sometimes also other types of developer. Also I do embedded systems and other hardware things sometimes. Big tech nerd all around. I'm currently wrapping up my computer science study, and I also work as a software development intern. I spend a lot of my free time maintaining my personal projects and contributing to some others, which you can learn more about [over here](/projects).
