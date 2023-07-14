@@ -27,6 +27,12 @@ Gets rid of stupid crap from Fandom wikis, like the useless network navigation b
 	</div>
 </div>
 
+## Un-fuck Amazon
+
+Gets rid of stupid crap from Amazon, like the "there are things in your cart!" sidebar and various upsells on product pages. Has options for hiding lots of different things.
+
+<a class="button userstyle-install" href="https://raw.githubusercontent.com/eritbh/userstyles/main/un-fuck-amazon.user.css">Install</a>
+
 ## Discord Custom Fonts
 
 Lets you set custom body and code fonts for Discord. Also undoes dumb `font-weight` shenanigans that Discord sets up on light mode if you're on a standard-density monitor (because most fonts are designed to be readable in black-on-white on normal displays, you incompetent assholes).
