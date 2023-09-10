@@ -3,10 +3,7 @@ description: Things too long or boring for Twitter
 author: eritbh
 
 footer_links:
-- name: Mastodon
-  url: https://tech.lgbt/@eritbh
-  rel: me
-- name: More Socials
+- name: Socials
   url: /erin/#socials
 - name: GitHub
   url: https://github.com/eritbh
