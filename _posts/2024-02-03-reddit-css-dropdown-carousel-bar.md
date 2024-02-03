@@ -290,12 +290,15 @@ Now we start dealing with the actual dropdown contents. We're gonna use
 `position: absolute`, like we mentioned before, to have this sit just underneath
 the button label. We'll also set a `width` so the links can fit without
 wrapping; though if you *do* want text wrapping then you can also use a normal
-pixel value for `width` instead of the `max-content` keyword.
+pixel value for `width` instead of the `max-content` keyword. Finally we'll
+include `z-index: 1` to make sure the dropdown is rendered over the top of some
+other Reddit elements which are badly behaved.
 
 ```css
 .side .md > :first-child > p em {
 	display: block;
 	position: absolute;
+	z-index: 1;
 	top: 40px;
 	width: max-content;
 	background: yellow;
