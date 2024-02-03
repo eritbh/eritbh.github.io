@@ -1,6 +1,6 @@
 ---
-title: Building dropdowns and a message carousel into a subreddit stylesheet
-excerpt: Do you want to make custom interactive components for your forum, but you get almost no control over the DOM? Do I ever have the CSS hack for you.
+title: Building Dropdowns and a Message Carousel Into a Subreddit Stylesheet
+excerpt: Do you want to make custom interactive components for your forum, but you get almost no control over the DOM? Do I ever have the CSS hack for you. I have a Markdown parser and a dream.
 ---
 *This post is an annotated source walkthrough of an infobar with link dropdowns
 and a rotating message carousel, which you can integrate into your subreddit's
